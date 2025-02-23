@@ -16,3 +16,7 @@ export function csvJSON(csv: any) {
 	}
 	return result;
 }
+
+export function getBlock(block: number) {
+	return 'Block' + (block + 1);
+}

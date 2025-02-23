@@ -1,29 +1,42 @@
 <script lang="ts">
 	import { csvJSON } from '$lib';
+	import { schedule } from '$lib/schedule';
 
 	let files: any = $state();
-	let text = $state('');
+	let data = $state('');
 	let fileInput: any = $state();
-    let scheduling = $state(false);
+	let status = $state('waiting');
+	let url = $state('');
+	let fileLink: any = $state();
 
 	async function change() {
-        scheduling = true;
+		status = 'scheduling';
 		let file = files[0];
 		let fileReader = new FileReader();
 		fileReader.onload = () => {
-			text = JSON.stringify(csvJSON(String(fileReader.result)));
+			data = JSON.stringify(schedule(csvJSON(String(fileReader.result))));
+			status = 'finished';
 		};
 		fileReader.readAsText(file);
 	}
-	function onclick() {
+	function uploadFile() {
 		fileInput.click();
+	}
+	function download() {
+		const blob = new Blob([data], { type: 'application/json' });
+		url = URL.createObjectURL(blob);
+		fileLink.click();
 	}
 </script>
 
 <input type="file" accept=".csv" bind:files onchange={change} hidden bind:this={fileInput} />
 
-{#if scheduling}
-    <p>Please Wait...</p>
-{:else}
-    <button {onclick}>File Input</button>
+<a hidden href={url} download="schedule.json" bind:this={fileLink}>Hidden</a>
+
+{#if status === 'scheduling'}
+	<p>Please Wait...</p>
+{:else if status === 'waiting'}
+	<button onclick={uploadFile}>File Input</button>
+{:else if status === 'finished'}
+	<button onclick={download}>Download File</button>
 {/if}
