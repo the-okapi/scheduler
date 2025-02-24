@@ -109,5 +109,18 @@ export function schedule(
 		}
 		schedule.push(student);
 	}
+	for (let i = 0; i < enrolledA.length; i++) {
+		for (let j = 0; j < enrolledA[i].length; j++) {
+			let workshop = enrolledA[i][j];
+			if (workshop.length < minimum) {
+				for (let k = 0; k < enrolledA[i].length; i++) {
+					let workshop2 = enrolledA[i][k];
+					if (workshop2.length > minimum) {
+						// todo!
+					}
+				}
+			}
+		}
+	}
 	return schedule;
 }
