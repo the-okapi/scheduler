@@ -14,7 +14,9 @@
 		let file = files[0];
 		let fileReader = new FileReader();
 		fileReader.onload = () => {
-			data = JSON.stringify(schedule(csvJSON(String(fileReader.result))));
+			data = JSON.stringify(
+				schedule(csvJSON(String(fileReader.result)), 25, 10, 7, 15, 17, 4, 2, 2)
+			);
 			status = 'finished';
 		};
 		fileReader.readAsText(file);
