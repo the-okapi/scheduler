@@ -16,6 +16,7 @@
 - Any more customization?
 - Sponsorship
 - . in between letter and number for workshop (A.1 instead of A1)
+- Can remove people from one activity to fill up another.
 
 ## Reminders
 
