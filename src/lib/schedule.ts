@@ -12,7 +12,7 @@ export function schedule(
 	numB: number
 ) {
 	let schedule: any[] = [];
-	let enrolledA: any[] = [];
+	let enrolledA: string[][][] = [];
 	for (let i = 0; i < blocks; i++) {
 		enrolledA.push([]);
 	}
@@ -21,7 +21,7 @@ export function schedule(
 			enrolledA[j].push([]);
 		}
 	}
-	let enrolledB: any[] = [];
+	let enrolledB: string[][][] = [];
 	for (let i = 0; i < blocks; i++) {
 		enrolledB.push([]);
 	}
@@ -112,11 +112,11 @@ export function schedule(
 	for (let i = 0; i < enrolledA.length; i++) {
 		for (let j = 0; j < enrolledA[i].length; j++) {
 			if (enrolledA[i][j].length < minimum) {
-				for (let k = 0; k < enrolledA[i].length; i++) {
+				for (let k = 0; k < enrolledA[i].length; k++) {
 					if (enrolledA[i][k].length > minimum) {
 						while (enrolledA[i][j].length < minimum && enrolledA[i][k].length > minimum) {
 							let student = enrolledA[i][k].pop();
-							enrolledA[i][j].push(student);
+							enrolledA[i][j].push(student ?? '0');
 							students[students.findIndex((a) => a.ParticipantID === student)][getBlock(i)] =
 								`A${j + 1}`;
 						}
@@ -131,11 +131,11 @@ export function schedule(
 	for (let i = 0; i < enrolledB.length; i++) {
 		for (let j = 0; j < enrolledB[i].length; j++) {
 			if (enrolledB[i][j].length < minimum) {
-				for (let k = 0; k < enrolledB[i].length; i++) {
+				for (let k = 0; k < enrolledB[i].length; k++) {
 					if (enrolledB[i][k].length > minimum) {
 						while (enrolledB[i][j].length < minimum && enrolledB[i][k].length > minimum) {
 							let student = enrolledB[i][k].pop();
-							enrolledB[i][j].push(student);
+							enrolledB[i][j].push(student ?? '0');
 							students[students.findIndex((b) => b.ParticipantID === student)][getBlock(i)] =
 								`B${j + 1}`;
 						}
