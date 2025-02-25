@@ -75,7 +75,7 @@ export function schedule(
 					for (let j = 0; j < enrolledA.length; j++) {
 						if (enrolledA[i][j].length < maximum) {
 							enrolledA[i][j].push(student.ParticipantID);
-							student[block] = 'A' + j;
+							student[block] = `A${j + 1}`;
 							studentA++;
 							break;
 						}
@@ -95,7 +95,7 @@ export function schedule(
 					for (let j = 0; j < enrolledB.length; j++) {
 						if (enrolledB[i][j].length < maximum) {
 							enrolledB[i][j].push(student.ParticipantID);
-							student[block] = 'B' + j;
+							student[block] = `B${j + 1}`;
 							studentB++;
 							break;
 						}
@@ -111,12 +111,37 @@ export function schedule(
 	}
 	for (let i = 0; i < enrolledA.length; i++) {
 		for (let j = 0; j < enrolledA[i].length; j++) {
-			let workshop = enrolledA[i][j];
-			if (workshop.length < minimum) {
+			if (enrolledA[i][j].length < minimum) {
 				for (let k = 0; k < enrolledA[i].length; i++) {
-					let workshop2 = enrolledA[i][k];
-					if (workshop2.length > minimum) {
-						// todo!
+					if (enrolledA[i][k].length > minimum) {
+						while (enrolledA[i][j].length < minimum && enrolledA[i][k].length > minimum) {
+							let student = enrolledA[i][k].pop();
+							enrolledA[i][j].push(student);
+							students[students.findIndex((a) => a.ParticipantID === student)][getBlock(i)] =
+								`A${j + 1}`;
+						}
+						if (enrolledA[i][j].length >= minimum) {
+							break;
+						}
+					}
+				}
+			}
+		}
+	}
+	for (let i = 0; i < enrolledB.length; i++) {
+		for (let j = 0; j < enrolledB[i].length; j++) {
+			if (enrolledB[i][j].length < minimum) {
+				for (let k = 0; k < enrolledB[i].length; i++) {
+					if (enrolledB[i][k].length > minimum) {
+						while (enrolledB[i][j].length < minimum && enrolledB[i][k].length > minimum) {
+							let student = enrolledB[i][k].pop();
+							enrolledB[i][j].push(student);
+							students[students.findIndex((b) => b.ParticipantID === student)][getBlock(i)] =
+								`B${j + 1}`;
+						}
+						if (enrolledB[i][j].length >= minimum) {
+							break;
+						}
 					}
 				}
 			}
