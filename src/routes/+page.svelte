@@ -9,13 +9,32 @@
 	let url = $state('');
 	let fileLink: any = $state();
 
+	let maximum = $state(25);
+	let minimum = $state(10);
+	let numChoices = $state(7);
+	let numWorkshopsA = $state(15);
+	let numWorkshopsB = $state(15);
+	let blocks = $state(4);
+	let numA = $state(2);
+	let numB = $state(2);
+
 	async function change() {
 		status = 'scheduling';
 		let file = files[0];
 		let fileReader = new FileReader();
 		fileReader.onload = () => {
 			data = JSON.stringify(
-				schedule(csvJSON(String(fileReader.result)), 25, 10, 7, 15, 17, 4, 2, 2)
+				schedule(
+					csvJSON(String(fileReader.result)),
+					maximum,
+					minimum,
+					numChoices,
+					numWorkshopsA,
+					numWorkshopsB,
+					blocks,
+					numA,
+					numB
+				)
 			);
 			status = 'finished';
 		};
@@ -37,8 +56,24 @@
 
 {#if status === 'scheduling'}
 	<p>Please Wait...</p>
-{:else if status === 'waiting'}
-	<button onclick={uploadFile}>File Input</button>
 {:else if status === 'finished'}
-	<button onclick={download}>Download File</button>
+	<button onclick={download}>Download File (.json)</button>
+{:else}
+	<button onclick={uploadFile}>Input Spreadsheet (.csv)</button><br />
+	<label
+		>Maximum number of students per workshop: <input type="number" bind:value={maximum} /></label
+	><br />
+	<label
+		>Minimum number of students per workshop: <input type="number" bind:value={minimum} /></label
+	><br />
+	<label
+		>Number of choices per student in input spreadsheet: <input
+			type="number"
+			bind:value={numChoices}
+		/></label
+	><br />
+	<label>Number of A workshops: <input type="number" bind:value={numWorkshopsA} /></label><br />
+	<label>Number of B workshops: <input type="number" bind:value={numWorkshopsB} /></label><br />
+	<label>Number of A workshops per student: <input type="number" bind:value={numA} /></label><br />
+	<label>Numbee of blocks: <input type="number" bind:value={blocks} /></label>
 {/if}
