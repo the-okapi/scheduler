@@ -59,7 +59,7 @@
 {:else if status === 'finished'}
 	<button onclick={download}>Download File (.json)</button>
 {:else}
-	<button onclick={uploadFile}>Input Spreadsheet (.csv)</button><br />
+	<button onclick={uploadFile}>Input Spreadsheet (.csv)</button><br /><br />
 	<label
 		>Maximum number of students per workshop: <input type="number" bind:value={maximum} /></label
 	><br />
@@ -77,3 +77,5 @@
 	<label>Number of A workshops per student: <input type="number" bind:value={numA} /></label><br />
 	<label>Numbee of blocks: <input type="number" bind:value={blocks} /></label>
 {/if}
+
+<p>Website made by <strong>Unlimited Stuff Ltd.</strong></p>

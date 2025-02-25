@@ -37,7 +37,7 @@ export function schedule(
 			choices.push(person[`Choice${i + 1}`]);
 		}
 		let student: any = {
-			ParticipantID: h + 1
+			ParticipantID: person.ParticipantID
 		};
 		for (let i = 0; i < blocks; i++) {
 			student[getBlock(i)] = '';
