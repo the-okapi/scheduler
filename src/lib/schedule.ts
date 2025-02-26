@@ -13,25 +13,25 @@ export function schedule(
 	doubleBlock: string
 ) {
 	let schedule: any[] = [];
+	let enrolledA: string[][][] = [];
+	for (let i = 0; i < blocks; i++) {
+		enrolledA.push([]);
+	}
+	for (let i = 0; i < numWorkshopsA; i++) {
+		for (let j = 0; j < enrolledA.length; j++) {
+			enrolledA[j].push([]);
+		}
+	}
+	let enrolledB: string[][][] = [];
+	for (let i = 0; i < blocks; i++) {
+		enrolledB.push([]);
+	}
+	for (let i = 0; i < numWorkshopsB; i++) {
+		for (let j = 0; j < enrolledB.length; j++) {
+			enrolledB[j].push([]);
+		}
+	}
 	try {
-		let enrolledA: string[][][] = [];
-		for (let i = 0; i < blocks; i++) {
-			enrolledA.push([]);
-		}
-		for (let i = 0; i < numWorkshopsA; i++) {
-			for (let j = 0; j < enrolledA.length; j++) {
-				enrolledA[j].push([]);
-			}
-		}
-		let enrolledB: string[][][] = [];
-		for (let i = 0; i < blocks; i++) {
-			enrolledB.push([]);
-		}
-		for (let i = 0; i < numWorkshopsB; i++) {
-			for (let j = 0; j < enrolledB.length; j++) {
-				enrolledB[j].push([]);
-			}
-		}
 		for (let h = 0; h < students.length; h++) {
 			const person = students[h];
 			if (person.Choice1 === undefined) {
@@ -218,5 +218,5 @@ export function schedule(
 	} catch (_) {
 		schedule = ['error'];
 	}
-	return schedule;
+	return [schedule, enrolledA, enrolledB];
 }
