@@ -6,6 +6,10 @@
 - List of workshop names
 - Must download twice
 
+## Questions
+
+- Workshop B.3
+
 ## Reminders
 
 - Each column in the input spreadsheet must be spelled correctly (ParticipantID not Participant ID, Choice1 not Choice 1)
