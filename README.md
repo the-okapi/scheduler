@@ -4,8 +4,7 @@
 
 - **Testing**
 - List of workshop names
-- Make sure students don't go in one workshop twice
-- Don't put extra student in double block
+- Must download twice
 
 ## Questions
 

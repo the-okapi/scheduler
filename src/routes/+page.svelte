@@ -147,3 +147,9 @@
 <hr />
 
 <p>Website made by <strong>Unlimited Stuff Ltd.</strong></p>
+
+<style>
+	:root {
+		font-family: system-ui, sans-serif;
+	}
+</style>

@@ -151,7 +151,7 @@ export function schedule(
 						for (let j = 0; j < enrolledA.length; j++) {
 							if (enrolledA[i][j].length < maximum) {
 								enrolledA[i][j].push(student.ParticipantID);
-								student[block] = `A${j + 1}`;
+								student[block] = `A.${j + 1}`;
 								studentA++;
 								break;
 							}
@@ -171,7 +171,7 @@ export function schedule(
 						for (let j = 0; j < enrolledB.length; j++) {
 							if (enrolledB[i][j].length < maximum) {
 								enrolledB[i][j].push(student.ParticipantID);
-								student[block] = `B${j + 1}`;
+								student[block] = `B.${j + 1}`;
 								studentB++;
 								break;
 							}
@@ -190,16 +190,18 @@ export function schedule(
 				if (enrolledA[i][j].length < minimum) {
 					for (let k = 0; k < enrolledA[i].length; k++) {
 						const workshopName = `A.${k + 1}`;
-						if (
-							enrolledA[i][k].length > minimum &&
-							!studentIsIn(studentIsIn, blocks, workshopName) &&
-							doubleBlock !== workshopName
-						) {
+						if (enrolledA[i][k].length > minimum && doubleBlock !== workshopName) {
 							while (enrolledA[i][j].length < minimum && enrolledA[i][k].length > minimum) {
-								const student = enrolledA[i][k].pop();
-								enrolledA[i][j].push(student ?? '0');
-								students[students.findIndex((a) => a.ParticipantID === student)][getBlock(i)] =
-									`A${j + 1}`;
+								const student = enrolledA[i][k][enrolledA[i][k].length - 1];
+								const studentIndex = students.findIndex((a) => a.ParticipantID === student);
+								if (
+									!studentIsIn(students[studentIndex], blocks, `A.${k + 1}`) &&
+									students[studentIndex][`Block${i + 1}`].split('.')[0] === 'A'
+								) {
+									enrolledA[i][k].pop();
+									enrolledA[i][j].push(student ?? '0');
+									students[studentIndex][getBlock(i)] = `A.${j + 1}`;
+								}
 							}
 							if (enrolledA[i][j].length >= minimum) {
 								break;
@@ -214,16 +216,18 @@ export function schedule(
 				if (enrolledB[i][j].length < minimum) {
 					for (let k = 0; k < enrolledB[i].length; k++) {
 						const workshopName = `B.${k + 1}`;
-						if (
-							enrolledB[i][k].length > minimum &&
-							!studentIsIn(studentIsIn, blocks, workshopName) &&
-							doubleBlock !== workshopName
-						) {
+						if (enrolledB[i][k].length > minimum && doubleBlock !== workshopName) {
 							while (enrolledB[i][j].length < minimum && enrolledB[i][k].length > minimum) {
-								const student = enrolledB[i][k].pop();
-								enrolledB[i][j].push(student ?? '0');
-								students[students.findIndex((b) => b.ParticipantID === student)][getBlock(i)] =
-									`B${j + 1}`;
+								const student = enrolledA[i][k][enrolledA[i][k].length - 1];
+								const studentIndex = students.findIndex((a) => a.ParticipantID === student);
+								if (
+									!studentIsIn(students[studentIndex], blocks, `B.${k + 1}`) &&
+									students[studentIndex][`Block${i + 1}`].split('.')[0] === 'A'
+								) {
+									enrolledB[i][k].pop();
+									enrolledB[i][j].push(student ?? '0');
+									students[studentIndex][getBlock(i)] = `B.${j + 1}`;
+								}
 							}
 							if (enrolledB[i][j].length >= minimum) {
 								break;
