@@ -5,10 +5,9 @@
 - **Testing**
 - List of workshop names
 - Must download twice
-
-## Questions
-
-- Workshop B.3
+- Prefer lower filling workshops
+- Multiple double blocks
+- Workshop B.3: 6/7 Blocks 1 & 2, 8 Blocks 3 & 4
 
 ## Reminders
 
@@ -18,4 +17,4 @@
 - Program will output workshop A01 as A1
 - . in between letter and number
 - Only one double block
-- Order of workshop numbers matter
+- Grade in Input spreadsheet
