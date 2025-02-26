@@ -14,3 +14,4 @@
 - Program will output workshop A01 as A1
 - . in between letter and number
 - Only one double block
+- Order of workshop numbers matter
