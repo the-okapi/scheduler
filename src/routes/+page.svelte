@@ -8,11 +8,15 @@
 	};
 
 	let files: any = $state();
+	let workshopFiles: any = $state();
 	let data = $state('');
 	let fileInput: any = $state();
+	let workshopFileInput: any = $state();
 	let status = $state('waiting');
 	let url = $state('');
 	let fileLink: any = $state();
+
+	let workshopListSelected = $state(false);
 
 	let maximum = $state(25);
 	let minimum = $state(10);
@@ -28,7 +32,7 @@
 
 	let workshops: Workshop[] = $state([]);
 
-	async function change() {
+	function change() {
 		status = 'scheduling';
 		let file = files[0];
 		let fileReader = new FileReader();
@@ -86,8 +90,14 @@
 		};
 		fileReader.readAsText(file);
 	}
+	function workshopFilesChange() {
+		workshopListSelected = true;
+	}
 	function uploadFile() {
 		fileInput.click();
+	}
+	function uploadWorkshopFile() {
+		workshopFileInput.click();
 	}
 	function download() {
 		const blob = new Blob([data], { type: 'application/json' });
@@ -100,9 +110,20 @@
 		downloadName = `${name}.json`;
 		fileLink.click();
 	}
+	function back() {
+		status = 'waiting';
+	}
 </script>
 
 <input type="file" accept=".csv" bind:files onchange={change} hidden bind:this={fileInput} />
+<input
+	type="file"
+	accept=".csv"
+	bind:files={workshopFiles}
+	onchange={workshopFilesChange}
+	hidden
+	bind:this={workshopFileInput}
+/>
 
 <a hidden href={url} download={downloadName} bind:this={fileLink}>Hidden</a>
 
@@ -114,13 +135,16 @@
 		<button onclick={() => downloadLink(workshop.url, workshop.name)}
 			>Download Workshop {workshop.name} List</button
 		>
-	{/each}
+	{/each}<br /><br />
+	<button onclick={back}>Back</button>
 {:else if status === 'error'}
 	<p>There was an error.</p>
 {:else}
 	<button onclick={uploadFile}>Input Spreadsheet</button><br /><br />
-	<label
-		>Maximum number of students per workshop: <input type="number" bind:value={maximum} /></label
+	<button onclick={uploadWorkshopFile}>List of Workshops</button>
+	{#if workshopListSelected}List Selected{/if}<br /><br />
+	<label>
+		Maximum number of students per workshop: <input type="number" bind:value={maximum} /></label
 	><br />
 	<label
 		>Minimum number of students per workshop: <input type="number" bind:value={minimum} /></label

@@ -193,16 +193,23 @@ export function schedule(
 					for (let k = 0; k < enrolledA[i].length; k++) {
 						const workshopName = `A.${k + 1}`;
 						if (enrolledA[i][k].length > minimum && doubleBlock !== workshopName) {
-							while (enrolledA[i][j].length < minimum && enrolledA[i][k].length > minimum) {
-								const student = enrolledA[i][k][enrolledA[i][k].length - 1];
+							let length = 1;
+							while (
+								enrolledA[i][j].length < minimum &&
+								enrolledA[i][k].length > minimum &&
+								length <= enrolledA[i][k].length
+							) {
+								const student = enrolledA[i][k][enrolledA[i][k].length - length];
 								const studentIndex = schedule.findIndex((a) => a.ParticipantID === student);
 								if (
 									!studentIsIn(schedule[studentIndex], blocks, `A.${k + 1}`) &&
 									schedule[studentIndex][`Block${i + 1}`].split('.')[0] === 'A'
 								) {
-									enrolledA[i][k].pop();
+									enrolledA[i][k].splice(enrolledA[i][k].length - length);
 									enrolledA[i][j].push(student ?? '0');
 									schedule[studentIndex][getBlock(i)] = `A.${j + 1}`;
+								} else {
+									length++;
 								}
 							}
 							if (enrolledA[i][j].length >= minimum) {
@@ -219,8 +226,13 @@ export function schedule(
 					for (let k = 0; k < enrolledB[i].length; k++) {
 						const workshopName = `B.${k + 1}`;
 						if (enrolledB[i][k].length > minimum && doubleBlock !== workshopName) {
-							while (enrolledB[i][j].length < minimum && enrolledB[i][k].length > minimum) {
-								const student = enrolledA[i][k][enrolledA[i][k].length - 1];
+							let length = 1;
+							while (
+								enrolledB[i][j].length < minimum &&
+								enrolledB[i][k].length > minimum &&
+								length <= enrolledB[i][k].length
+							) {
+								const student = enrolledA[i][k][enrolledA[i][k].length - length];
 								const studentIndex = students.findIndex((a) => a.ParticipantID === student);
 								if (
 									!studentIsIn(schedule[studentIndex], blocks, `B.${k + 1}`) &&
@@ -229,6 +241,8 @@ export function schedule(
 									enrolledB[i][k].pop();
 									enrolledB[i][j].push(student ?? '0');
 									schedule[studentIndex][getBlock(i)] = `B.${j + 1}`;
+								} else {
+									length++;
 								}
 							}
 							if (enrolledB[i][j].length >= minimum) {
