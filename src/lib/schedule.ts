@@ -44,12 +44,14 @@ export function schedule(
 		}
 		let studentA = 0;
 		let studentB = 0;
+		console.log(choices);
 		for (let i = 0; i < choices.length; i++) {
 			let choice = choices[i];
-			let [workshopGroup, wNum] = choice.split('');
-			let workshopNum = Number(wNum);
+			let [workshopGroup, wNum] = choice.split('.');
+			let workshopNum = Number(wNum) - 1;
 			if (workshopGroup === 'A' && studentA < numA) {
 				let block = studentA + studentB;
+				console.log(enrolledA[block], workshopNum);
 				if (enrolledA[block][workshopNum].length < maximum) {
 					enrolledA[block][workshopNum].push(student.ParticipantID);
 					student[getBlock(block)] = choice;
@@ -60,6 +62,7 @@ export function schedule(
 			}
 			if (workshopGroup === 'B' && studentB < numB) {
 				let block = studentA + studentB;
+				console.log(enrolledA[block], workshopNum);
 				if (enrolledB[block][workshopNum].length < maximum) {
 					enrolledB[block][workshopNum].push(student.ParticipantID);
 					student[getBlock(studentA + studentB)] = choice;

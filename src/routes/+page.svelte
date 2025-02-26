@@ -13,7 +13,7 @@
 	let minimum = $state(10);
 	let numChoices = $state(7);
 	let numWorkshopsA = $state(15);
-	let numWorkshopsB = $state(15);
+	let numWorkshopsB = $state(17);
 	let blocks = $state(4);
 	let numA = $state(2);
 	let numB = $state(2);
@@ -75,7 +75,7 @@
 	<label>Number of A workshops: <input type="number" bind:value={numWorkshopsA} /></label><br />
 	<label>Number of B workshops: <input type="number" bind:value={numWorkshopsB} /></label><br />
 	<label>Number of A workshops per student: <input type="number" bind:value={numA} /></label><br />
-	<label>Numbee of blocks: <input type="number" bind:value={blocks} /></label>
+	<label>Number of blocks: <input type="number" bind:value={blocks} /></label>
 {/if}
 
 <p>Website made by <strong>Unlimited Stuff Ltd.</strong></p>

@@ -6,17 +6,9 @@
 - Output Lists
 - Testing
 - List of workshop names
-
-## Questions
-
-- Will the website have to sort the students by grade or will the spreadsheet come sorted?
-- Can I rig the website so I will get what I want?
-- What format will the lists of kids for each workshop be in?
-- Does there need to be more than just A and B workshops (for the future)
-- Any more customization?
-- Sponsorship
-- . in between letter and number for workshop (A.1 instead of A1)
-- Can remove people from one activity to fill up another.
+- Add requirements to main page
+- Fix end of whitespace at csv
+- Add customizable column names
 
 ## Reminders
 
@@ -24,3 +16,4 @@
 - The input spreadsheet must be in CSV format
 - The output schedule will be a .JSON file (how to open in excel)
 - Program will output workshop A01 as A1
+- . in between letter and number
