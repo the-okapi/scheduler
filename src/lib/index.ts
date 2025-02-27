@@ -1,3 +1,8 @@
+export type Filter = {
+	workshop: string;
+	block: number;
+};
+
 export function csvJSON(csv: any) {
 	const lines = csv.split('\n');
 

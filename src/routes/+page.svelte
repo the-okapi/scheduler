@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { csvJSON } from '$lib';
-	import { schedule } from '$lib/schedule';
+	import { csvJSON, type Filter } from '$lib';
+	import { schedule } from '$lib/schedule.svelte';
 
 	type Workshop = {
 		name: string;
@@ -28,6 +28,11 @@
 	let numB = $state(2);
 	let doubleBlock = $state('A.3');
 
+	let filterWorkshop = $state('B.3');
+	let filterBlock = $state(1);
+
+	let filters: Filter[] = $state([]);
+
 	let downloadName = $state('schedule.json');
 
 	let workshops: Workshop[] = $state([]);
@@ -40,14 +45,14 @@
 			let [scheduled, aWorkshops, bWorkshops] = schedule(
 				csvJSON(String(fileReader.result)),
 				maximum,
-				minimum,
 				numChoices,
 				numWorkshopsA,
 				numWorkshopsB,
 				blocks,
 				numA,
 				numB,
-				doubleBlock
+				doubleBlock,
+				filters
 			);
 			if (scheduled[0] === 'error') {
 				status = 'error';
@@ -113,6 +118,18 @@
 	function back() {
 		status = 'waiting';
 	}
+	function addFilter(event: Event) {
+		event.preventDefault();
+		for (let i = 0; i < filters.length; i++) {
+			if (filters[i].workshop === filterWorkshop && filters[i].block === filterBlock) {
+				return;
+			}
+		}
+		filters.push({ workshop: filterWorkshop, block: filterBlock });
+	}
+	function remove(i: number) {
+		filters.splice(i, 1);
+	}
 </script>
 
 <input type="file" accept=".csv" bind:files onchange={change} hidden bind:this={fileInput} />
@@ -159,8 +176,20 @@
 	<label>Number of B workshops: <input type="number" bind:value={numWorkshopsB} /></label><br />
 	<label>Number of A workshops per student: <input type="number" bind:value={numA} /></label><br />
 	<label>Number of blocks: <input type="number" bind:value={blocks} /></label><br />
-	<label>Double block: <input type="text" bind:value={doubleBlock} /></label>
+	<label>Double block: <input type="text" bind:value={doubleBlock} /></label><br />
+	<form onsubmit={addFilter}>
+		<label
+			><strong>Stop Workshop</strong>: Code:
+			<input bind:value={filterWorkshop} required type="text" />
+			Block: <input bind:value={filterBlock} required type="number" min={1} max={blocks} />
+			<button type="submit">Add</button></label
+		>
+	</form>
 
+	{#each filters as filter, i}
+		<span>{filter.workshop} is stopped in Block {filter.block}</span>
+		<button onclick={() => remove(i)}>Remove</button><br />
+	{/each}
 	<hr />
 
 	<p>Input spreadsheet columns: ParticipantID, Choice1, Choice2, Choice3...</p>
