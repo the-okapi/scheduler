@@ -132,11 +132,7 @@
 		fileLink.click();
 	}
 	function downloadLink(num: number) {
-		/*
-		url = link;
-		downloadName = `${name}.json`;
-		fileLink.click();*/
-		window.location.assign(`/list?workshop=${num}`);
+		window.open(`/list?blocks=${blocks}&workshop=${num}`);
 	}
 	function back() {
 		status = 'waiting';
@@ -173,7 +169,7 @@
 	<button onclick={download}>Download Schedule</button><br /><br />
 	{#each workshops as workshop}
 		<button onclick={() => downloadLink(workshop.num)}
-			>Download Workshop {workshop.name} List</button
+			>Workshop {workshop.name} List</button
 		>
 	{/each}<br /><br />
 	<button onclick={back}>Back</button>

@@ -33,7 +33,6 @@ export function schedule(
 		}
 	}
 	for (let i = 0; i < filters.length; i++) {
-		console.log(filters[i]);
 		const filter = filters[i];
 		const [workshopGroup, wNum] = filter.workshop.split('.');
 		const workshopNum = Number(wNum) - 1;
