@@ -32,19 +32,19 @@ export function schedule(
 			enrolledB[j].push([]);
 		}
 	}
-    for (let i = 0; i < filters.length; i++) {
-        console.log(filters[i]);
-        const filter = filters[i];
-        const [workshopGroup, wNum] = filter.workshop.split('.');
-        const workshopNum = Number(wNum)-1;
-        for (let j = 0; j < maximum; j++) {
-            if (workshopGroup === 'A') {
-                enrolledA[filter.block-1][workshopNum].push('');
-            } else {
-                enrolledB[filter.block-1][workshopNum].push('');
-            }
-        }
-    }
+	for (let i = 0; i < filters.length; i++) {
+		console.log(filters[i]);
+		const filter = filters[i];
+		const [workshopGroup, wNum] = filter.workshop.split('.');
+		const workshopNum = Number(wNum) - 1;
+		for (let j = 0; j < maximum; j++) {
+			if (workshopGroup === 'A') {
+				enrolledA[filter.block - 1][workshopNum].push('');
+			} else {
+				enrolledB[filter.block - 1][workshopNum].push('');
+			}
+		}
+	}
 	try {
 		for (let h = 0; h < students.length; h++) {
 			const person = students[h];
@@ -90,7 +90,7 @@ export function schedule(
 								} else {
 									const oldWorkshop = student[getBlock(block - 1)];
 									const [oldWorkshopGroup, oldWNum] = oldWorkshop.split('.');
-                                    const oldWorkshopNum = Number(oldWNum)-1;
+									const oldWorkshopNum = Number(oldWNum) - 1;
 									student[getBlock(block + 1)] = oldWorkshop;
 									if (oldWorkshopGroup === 'A') {
 										const oldWorkshopIndex = enrolledA[block - 1][oldWorkshopNum].findIndex(
@@ -132,7 +132,7 @@ export function schedule(
 								if (studentA + (studentB % 2) === 1) {
 									const oldWorkshop = student[getBlock(block - 1)];
 									const [oldWorkshopGroup, oldWNum] = oldWorkshop.split('.');
-                                    const oldWorkshopNum = Number(oldWNum) - 1;
+									const oldWorkshopNum = Number(oldWNum) - 1;
 									student[getBlock(block + 2)] = oldWorkshop;
 									if (oldWorkshopGroup === 'A') {
 										const oldWorkshopIndex = enrolledA[block - 1][oldWorkshopNum].findIndex(

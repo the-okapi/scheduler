@@ -5,6 +5,12 @@
 	type Workshop = {
 		name: string;
 		url: string;
+		num: number;
+	};
+
+	type WorkshopData = {
+		name: string;
+		data: any;
 	};
 
 	let files: any = $state();
@@ -36,6 +42,7 @@
 	let downloadName = $state('schedule.json');
 
 	let workshops: Workshop[] = $state([]);
+	let localStorageData: WorkshopData[] = $state([]);
 
 	function change() {
 		status = 'scheduling';
@@ -74,22 +81,36 @@
 						workshopsB[j][`Block${i + 1}`] = bWorkshops[i][j];
 					}
 				}
+				let num = 0;
 				for (let i = 0; i < workshopsA.length; i++) {
 					const blob = new Blob([JSON.stringify(workshopsA[i])], { type: 'application/json' });
 					let workshopUrl = URL.createObjectURL(blob);
 					workshops.push({
 						name: `A.${i + 1}`,
-						url: workshopUrl
+						url: workshopUrl,
+						num
 					});
+					localStorageData.push({
+						name: `A.${i + 1}`,
+						data: workshopsA[i]
+					});
+					num++;
 				}
 				for (let i = 0; i < workshopsB.length; i++) {
 					const blob = new Blob([JSON.stringify(workshopsB[i])], { type: 'application/json' });
 					let workshopUrl = URL.createObjectURL(blob);
 					workshops.push({
 						name: `B.${i + 1}`,
-						url: workshopUrl
+						url: workshopUrl,
+						num
 					});
+					localStorageData.push({
+						name: `B.${i + 1}`,
+						data: workshopsB[i]
+					});
+					num++;
 				}
+				localStorage.setItem('data', JSON.stringify(localStorageData));
 				status = 'finished';
 			}
 		};
@@ -110,10 +131,12 @@
 		downloadName = 'schedule.json';
 		fileLink.click();
 	}
-	function downloadLink(link: string, name: string) {
+	function downloadLink(num: number) {
+		/*
 		url = link;
 		downloadName = `${name}.json`;
-		fileLink.click();
+		fileLink.click();*/
+		window.location.assign(`/list?workshop=${num}`);
 	}
 	function back() {
 		status = 'waiting';
@@ -149,7 +172,7 @@
 {:else if status === 'finished'}
 	<button onclick={download}>Download Schedule</button><br /><br />
 	{#each workshops as workshop}
-		<button onclick={() => downloadLink(workshop.url, workshop.name)}
+		<button onclick={() => downloadLink(workshop.num)}
 			>Download Workshop {workshop.name} List</button
 		>
 	{/each}<br /><br />
@@ -202,7 +225,7 @@
 <p>Website made by <strong>Unlimited Stuff Ltd.</strong></p>
 
 <style>
-	:root {
-		font-family: system-ui, sans-serif;
+	:global(:root) {
+		font-family: system-ui;
 	}
 </style>
