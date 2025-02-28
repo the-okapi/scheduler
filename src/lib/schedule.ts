@@ -13,7 +13,6 @@ export function schedule(
 	doubleBlock: string,
 	filters: Filter[]
 ) {
-	console.log($state.snapshot(filters));
 	let schedule: any[] = [];
 	const enrolledA: string[][][] = [];
 	for (let i = 0; i < blocks; i++) {
@@ -33,6 +32,19 @@ export function schedule(
 			enrolledB[j].push([]);
 		}
 	}
+    for (let i = 0; i < filters.length; i++) {
+        console.log(filters[i]);
+        const filter = filters[i];
+        const [workshopGroup, wNum] = filter.workshop.split('.');
+        const workshopNum = Number(wNum)-1;
+        for (let j = 0; j < maximum; j++) {
+            if (workshopGroup === 'A') {
+                enrolledA[filter.block-1][workshopNum].push('');
+            } else {
+                enrolledB[filter.block-1][workshopNum].push('');
+            }
+        }
+    }
 	try {
 		for (let h = 0; h < students.length; h++) {
 			const person = students[h];
@@ -77,25 +89,26 @@ export function schedule(
 									studentA += 2;
 								} else {
 									const oldWorkshop = student[getBlock(block - 1)];
-									const [oldWorkshopGroup, oldWorkshopNum] = oldWorkshop.split('.');
-									student[getBlock(block + 2)] = oldWorkshop;
+									const [oldWorkshopGroup, oldWNum] = oldWorkshop.split('.');
+                                    const oldWorkshopNum = Number(oldWNum)-1;
+									student[getBlock(block + 1)] = oldWorkshop;
 									if (oldWorkshopGroup === 'A') {
 										const oldWorkshopIndex = enrolledA[block - 1][oldWorkshopNum].findIndex(
 											(a) => a === student.ParticipantID
 										);
 										enrolledA[block - 1][oldWorkshopNum].splice(oldWorkshopIndex, 1);
-										enrolledA[block + 2][oldWorkshopNum].push(student.ParticipantID);
+										enrolledA[block + 1][oldWorkshopNum].push(student.ParticipantID);
 									} else {
 										const oldWorkshopIndex = enrolledB[block - 1][oldWorkshopNum].findIndex(
 											(a) => a === student.ParticipantID
 										);
 										enrolledB[block - 1][oldWorkshopNum].splice(oldWorkshopIndex, 1);
-										enrolledB[block + 2][oldWorkshopNum].push(student.ParticipantID);
+										enrolledB[block + 1][oldWorkshopNum].push(student.ParticipantID);
 									}
 									enrolledA[block][workshopNum].push(student.ParticipantID);
-									enrolledA[block + 1][workshopNum].push(student.ParticipantID);
+									enrolledA[block - 1][workshopNum].push(student.ParticipantID);
 									student[getBlock(block)] = choice;
-									student[getBlock(block + 1)] = choice;
+									student[getBlock(block - 1)] = choice;
 									studentA += 2;
 								}
 							}
@@ -118,26 +131,27 @@ export function schedule(
 							if (studentB <= numB - 2) {
 								if (studentA + (studentB % 2) === 1) {
 									const oldWorkshop = student[getBlock(block - 1)];
-									const [oldWorkshopGroup, oldWorkshopNum] = oldWorkshop.split('.');
+									const [oldWorkshopGroup, oldWNum] = oldWorkshop.split('.');
+                                    const oldWorkshopNum = Number(oldWNum) - 1;
 									student[getBlock(block + 2)] = oldWorkshop;
 									if (oldWorkshopGroup === 'A') {
 										const oldWorkshopIndex = enrolledA[block - 1][oldWorkshopNum].findIndex(
 											(a) => a === student.ParticipantID
 										);
 										enrolledA[block - 1][oldWorkshopNum].splice(oldWorkshopIndex, 1);
-										enrolledA[block + 2][oldWorkshopNum].push(student.ParticipantID);
+										enrolledA[block + 1][oldWorkshopNum].push(student.ParticipantID);
 									} else {
 										const oldWorkshopIndex = enrolledB[block - 1][oldWorkshopNum].findIndex(
 											(a) => a === student.ParticipantID
 										);
 										enrolledB[block - 1][oldWorkshopNum].splice(oldWorkshopIndex, 1);
-										enrolledB[block + 2][oldWorkshopNum].push(student.ParticipantID);
+										enrolledB[block + 1][oldWorkshopNum].push(student.ParticipantID);
 									}
 								}
 								enrolledB[block][workshopNum].push(student.ParticipantID);
-								enrolledB[block + 1][workshopNum].push(student.ParticipantID);
+								enrolledB[block - 1][workshopNum].push(student.ParticipantID);
 								student[getBlock(block)] = choice;
-								student[getBlock(block + 1)] = choice;
+								student[getBlock(block - 1)] = choice;
 								studentB += 2;
 							}
 						}

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { csvJSON, type Filter } from '$lib';
-	import { schedule } from '$lib/schedule.svelte';
+	import { schedule } from '$lib/schedule';
 
 	type Workshop = {
 		name: string;
@@ -44,15 +44,15 @@
 		fileReader.onload = () => {
 			let [scheduled, aWorkshops, bWorkshops] = schedule(
 				csvJSON(String(fileReader.result)),
-				maximum,
-				numChoices,
-				numWorkshopsA,
-				numWorkshopsB,
-				blocks,
-				numA,
-				numB,
-				doubleBlock,
-				filters
+				$state.snapshot(maximum),
+				$state.snapshot(numChoices),
+				$state.snapshot(numWorkshopsA),
+				$state.snapshot(numWorkshopsB),
+				$state.snapshot(blocks),
+				$state.snapshot(numA),
+				$state.snapshot(numB),
+				$state.snapshot(doubleBlock),
+				$state.snapshot(filters)
 			);
 			if (scheduled[0] === 'error') {
 				status = 'error';
@@ -177,7 +177,7 @@
 	<label>Number of A workshops per student: <input type="number" bind:value={numA} /></label><br />
 	<label>Number of blocks: <input type="number" bind:value={blocks} /></label><br />
 	<label>Double block: <input type="text" bind:value={doubleBlock} /></label><br />
-	<form onsubmit={addFilter}>
+	<form onsubmit={addFilter} name="Workshop Filters">
 		<label
 			><strong>Stop Workshop</strong>: Code:
 			<input bind:value={filterWorkshop} required type="text" />
