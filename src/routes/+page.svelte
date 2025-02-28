@@ -31,7 +31,6 @@
 	let numWorkshopsB = $state(17);
 	let blocks = $state(4);
 	let numA = $state(2);
-	let numB = $state(2);
 	let doubleBlock = $state('A.3');
 
 	let filterWorkshop = $state('B.3');
@@ -57,7 +56,7 @@
 				$state.snapshot(numWorkshopsB),
 				$state.snapshot(blocks),
 				$state.snapshot(numA),
-				$state.snapshot(numB),
+				$state.snapshot(blocks - numA),
 				$state.snapshot(doubleBlock),
 				$state.snapshot(filters)
 			);
