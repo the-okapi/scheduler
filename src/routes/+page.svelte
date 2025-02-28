@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { csvJSON, type Filter } from '$lib';
+	import { csvJSON, jsonCSV, type Filter } from '$lib';
 	import { schedule } from '$lib/schedule';
 
 	type Workshop = {
@@ -15,7 +15,7 @@
 
 	let files: any = $state();
 	let workshopFiles: any = $state();
-	let data = $state('');
+	let data = $state();
 	let fileInput: any = $state();
 	let workshopFileInput: any = $state();
 	let status = $state('waiting');
@@ -64,7 +64,7 @@
 			if (scheduled[0] === 'error') {
 				status = 'error';
 			} else {
-				data = JSON.stringify(scheduled);
+				data = scheduled;
 				let workshopsA: any = [];
 				let workshopsB: any = [];
 				for (let i = 0; i < numWorkshopsA; i++) {
@@ -125,10 +125,17 @@
 	function uploadWorkshopFile() {
 		workshopFileInput.click();
 	}
+	function fields() {
+		let toReturn = ['ParticipantID'];
+		for (let i = 0; i < blocks; i++) {
+			toReturn.push(`Block${i + 1}`);
+		}
+		return toReturn;
+	}
 	function download() {
-		const blob = new Blob([data], { type: 'application/json' });
+		const blob = new Blob([jsonCSV(data, fields())]);
 		url = URL.createObjectURL(blob);
-		downloadName = 'schedule.json';
+		downloadName = 'schedule.csv';
 		fileLink.click();
 	}
 	function downloadLink(num: number) {
@@ -168,9 +175,7 @@
 {:else if status === 'finished'}
 	<button onclick={download}>Download Schedule</button><br /><br />
 	{#each workshops as workshop}
-		<button onclick={() => downloadLink(workshop.num)}
-			>Workshop {workshop.name} List</button
-		>
+		<button onclick={() => downloadLink(workshop.num)}>Workshop {workshop.name} List</button>
 	{/each}<br /><br />
 	<button onclick={back}>Back</button>
 {:else if status === 'error'}
