@@ -63,7 +63,7 @@
 		let workshopNames;
 		if (workshopListSelected) workshopNames = csvJSON(String(fileReader2.result));
 		else workshopNames = getDefaultNames();
-		console.log(workshopNames);
+		localStorage.setItem('workshops', JSON.stringify(workshopNames));
 		let [scheduled, aWorkshops, bWorkshops] = schedule(
 			csvJSON(String(fileReader.result)),
 			$state.snapshot(maximum),
@@ -133,6 +133,8 @@
 	}
 	function change() {
 		status = 'scheduling';
+		localStorage.setItem('blocks', JSON.stringify(blocks));
+		localStorage.setItem('numWorkshopsA', JSON.stringify(numWorkshopsA));
 		let file = files[0];
 		let fileReader = new FileReader();
 		fileReader.onload = () => {
@@ -143,15 +145,6 @@
 			} else scheduleFunc(fileReader, fileReader2);
 		};
 		fileReader.readAsText(file);
-	}
-	function workshopFilesChange() {
-		workshopListSelected = true;
-	}
-	function uploadFile() {
-		fileInput.click();
-	}
-	function uploadWorkshopFile() {
-		workshopFileInput.click();
 	}
 	function getFields() {
 		let toReturn = ['ParticipantID'];
@@ -166,12 +159,6 @@
 		downloadName = 'schedule.csv';
 		fileLink.click();
 	}
-	function downloadLink(num: number) {
-		window.open(`/list?blocks=${blocks}&workshop=${num}`);
-	}
-	function back() {
-		status = 'waiting';
-	}
 	function addFilter(event: Event) {
 		event.preventDefault();
 		for (let i = 0; i < filters.length; i++) {
@@ -181,9 +168,6 @@
 		}
 		filters.push({ workshop: filterWorkshop, block: filterBlock });
 	}
-	function remove(i: number) {
-		filters.splice(i, 1);
-	}
 </script>
 
 <input type="file" accept=".csv" bind:files onchange={change} hidden bind:this={fileInput} />
@@ -191,7 +175,7 @@
 	type="file"
 	accept=".csv"
 	bind:files={workshopFiles}
-	onchange={workshopFilesChange}
+	onchange={() => (workshopListSelected = true)}
 	hidden
 	bind:this={workshopFileInput}
 />
@@ -203,14 +187,16 @@
 {:else if status === 'finished'}
 	<button onclick={download}>Download Schedule</button><br /><br />
 	{#each workshops as workshop}
-		<button onclick={() => downloadLink(workshop.num)}>Workshop {workshop.name} List</button>
+		<button onclick={() => window.open(`/list?workshop=${workshop.num}`)}
+			>Workshop {workshop.name} List</button
+		>
 	{/each}<br /><br />
-	<button onclick={back}>Back</button>
+	<button onclick={() => (status = 'waiting')}>Back</button>
 {:else if status === 'error'}
 	<p>There was an error.</p>
 {:else}
-	<button onclick={uploadFile}>Input Spreadsheet</button><br /><br />
-	<button onclick={uploadWorkshopFile}>List of Workshops</button>
+	<button onclick={() => fileInput.click()}>Input Spreadsheet</button><br /><br />
+	<button onclick={() => workshopFileInput.click()}>List of Workshops</button>
 	{#if workshopListSelected}List Selected{/if}<br /><br />
 	<label>
 		Maximum number of students per workshop: <input type="number" bind:value={maximum} /></label
@@ -240,7 +226,7 @@
 
 	{#each filters as filter, i}
 		<span>{filter.workshop} is stopped in Block {filter.block}</span>
-		<button onclick={() => remove(i)}>Remove</button><br />
+		<button onclick={() => filters.splice(i, 1)}>Remove</button><br />
 	{/each}
 	<hr />
 

@@ -3,7 +3,6 @@
 ## Todo
 
 - **Testing**
-- List of workshop names
 - Must download twice
 - Multiple double blocks
 

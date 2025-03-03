@@ -13,7 +13,6 @@ export function schedule(
 	filters: Filter[],
 	workshops: WorkshopName[]
 ) {
-	console.log(workshops);
 	let schedule: any[] = [];
 	const enrolledA: string[][][] = [];
 	for (let i = 0; i < blocks; i++) {

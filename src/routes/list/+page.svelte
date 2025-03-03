@@ -1,9 +1,13 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { browser } from '$app/environment';
+	import { getWorkshopName } from '$lib';
 
 	const num: any = page.url.searchParams.get('workshop') ?? '';
-	const numBlocks: number = Number(page.url.searchParams.get('blocks')) || 0;
+
+	let numBlocks = 0;
+
+	let numWorkshopsA = $state(0);
 
 	let waiting = $state(true);
 	let url = $state('');
@@ -12,8 +16,13 @@
 	let fileLink: any = $state();
 
 	let data: any = $state({});
+	let workshops: any[] = $state([]);
+
 	if (browser) {
 		data = JSON.parse(localStorage.getItem('data') ?? '[]')[num];
+		workshops = JSON.parse(localStorage.getItem('workshops') ?? '');
+		numBlocks = Number(localStorage.getItem('blocks') ?? '0');
+		numWorkshopsA = Number(localStorage.getItem('numWorkshopsA'));
 		waiting = false;
 	}
 	function getBlocks() {
@@ -44,7 +53,7 @@
 	<p>Please Wait...</p>
 {:else}
 	<div class="main">
-		<h1>Workshop {data.name}</h1>
+		<h1>Workshop {getWorkshopName(workshops, numWorkshopsA, data.name)}</h1>
 
 		<div class="grid" style="grid-template-columns: {getBlocks()};">
 			{#each getLoopNums() as num}
