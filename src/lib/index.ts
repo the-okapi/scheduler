@@ -3,7 +3,12 @@ export type Filter = {
 	block: number;
 };
 
-export function csvJSON(csv: any) {
+export type WorkshopName = {
+	Code: string;
+	Name: string;
+};
+
+export function csvJSON(csv: string) {
 	const lines = csv.split('\n');
 
 	const result = [];
@@ -40,4 +45,14 @@ export function jsonCSV(json: any, fields: string[]) {
 
 export function getBlock(block: number) {
 	return 'Block' + (block + 1);
+}
+
+export function getWorkshopName(workshops: WorkshopName[], numA: number, code: string) {
+	const [group, n] = code.split('.');
+	const num = Number(n);
+	if (group === 'A') {
+		return workshops[num - 1].Name;
+	} else {
+		return workshops[numA + num - 1].Name;
+	}
 }

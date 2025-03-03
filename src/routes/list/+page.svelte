@@ -3,7 +3,7 @@
 	import { browser } from '$app/environment';
 
 	const num: any = page.url.searchParams.get('workshop') ?? '';
-	const numBlocks: number = Number(page.url.searchParams.get('blocks')) ?? 0;
+	const numBlocks: number = Number(page.url.searchParams.get('blocks')) || 0;
 
 	let waiting = $state(true);
 	let url = $state('');
@@ -16,14 +16,14 @@
 		data = JSON.parse(localStorage.getItem('data') ?? '[]')[num];
 		waiting = false;
 	}
-	function blocks() {
+	function getBlocks() {
 		let toReturn = '1fr';
 		for (let i = 1; i < numBlocks; i++) {
 			toReturn = toReturn.concat(' 1fr');
 		}
 		return toReturn;
 	}
-	function loopNums() {
+	function getLoopNums() {
 		let toReturn = [];
 		for (let i = 1; i <= numBlocks; i++) {
 			toReturn.push(i);
@@ -46,8 +46,8 @@
 	<div class="main">
 		<h1>Workshop {data.name}</h1>
 
-		<div class="grid" style="grid-template-columns: {blocks()};">
-			{#each loopNums() as num}
+		<div class="grid" style="grid-template-columns: {getBlocks()};">
+			{#each getLoopNums() as num}
 				<div>
 					<h2>Block {num}</h2>
 					{#each data.data[`Block${num}`] as student}

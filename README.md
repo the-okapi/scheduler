@@ -5,9 +5,7 @@
 - **Testing**
 - List of workshop names
 - Must download twice
-- Prefer lower filling workshops
 - Multiple double blocks
-- Workshop B.3: 6/7 Blocks 1 & 2, 8 Blocks 3 & 4
 
 ## Reminders
 
@@ -18,3 +16,4 @@
 - . in between letter and number
 - Only one double block
 - Grade in Input spreadsheet
+- Workshop Names must be in order, A first than B

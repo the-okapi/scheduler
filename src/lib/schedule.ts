@@ -1,5 +1,4 @@
-import { getBlock } from '$lib';
-import { type Filter } from '$lib';
+import { getBlock, type WorkshopName, type Filter, getWorkshopName } from '$lib';
 
 export function schedule(
 	students: any[],
@@ -11,8 +10,10 @@ export function schedule(
 	numA: number,
 	numB: number,
 	doubleBlock: string,
-	filters: Filter[]
+	filters: Filter[],
+	workshops: WorkshopName[]
 ) {
+	console.log(workshops);
 	let schedule: any[] = [];
 	const enrolledA: string[][][] = [];
 	for (let i = 0; i < blocks; i++) {
@@ -75,17 +76,11 @@ export function schedule(
 						!filters.includes({ workshop: choice, block: block + 1 })
 					) {
 						if (choice !== doubleBlock) {
-							enrolledA[block][workshopNum].push(student.ParticipantID);
-							student[getBlock(block)] = choice;
+							student[getBlock(block)] = getWorkshopName(workshops, numWorkshopsA, choice);
 							studentA++;
 						} else if (studentA <= numA - 2) {
-							if (studentA + (studentB % 2) === 0) {
-								enrolledA[block][workshopNum].push(student.ParticipantID);
-								enrolledA[block + 1][workshopNum].push(student.ParticipantID);
-								student[getBlock(block)] = choice;
-								student[getBlock(block + 1)] = choice;
-								studentA += 2;
-							} else {
+							const workshopName = getWorkshopName(workshops, numWorkshopsA, choice);
+							if (studentA + (studentB % 2) === 1) {
 								const oldWorkshop = student[getBlock(block - 1)];
 								const [oldWorkshopGroup, oldWNum] = oldWorkshop.split('.');
 								const oldWorkshopNum = Number(oldWNum) - 1;
@@ -105,10 +100,15 @@ export function schedule(
 								}
 								enrolledA[block][workshopNum].push(student.ParticipantID);
 								enrolledA[block - 1][workshopNum].push(student.ParticipantID);
-								student[getBlock(block)] = choice;
-								student[getBlock(block - 1)] = choice;
-								studentA += 2;
+								student[getBlock(block)] = workshopName;
+								student[getBlock(block - 1)] = workshopName;
+							} else {
+								enrolledA[block][workshopNum].push(student.ParticipantID);
+								enrolledA[block + 1][workshopNum].push(student.ParticipantID);
+								student[getBlock(block)] = workshopName;
+								student[getBlock(block + 1)] = workshopName;
 							}
+							studentA += 2;
 						}
 					} else {
 						continue;
@@ -122,9 +122,14 @@ export function schedule(
 					) {
 						if (choice !== doubleBlock) {
 							enrolledB[block][workshopNum].push(student.ParticipantID);
-							student[getBlock(studentA + studentB)] = choice;
+							student[getBlock(studentA + studentB)] = getWorkshopName(
+								workshops,
+								numWorkshopsA,
+								choice
+							);
 							studentB++;
 						} else {
+							const workshopName = getWorkshopName(workshops, numWorkshopsA, choice);
 							if (studentB <= numB - 2) {
 								if (studentA + (studentB % 2) === 1) {
 									const oldWorkshop = student[getBlock(block - 1)];
@@ -144,11 +149,16 @@ export function schedule(
 										enrolledB[block - 1][oldWorkshopNum].splice(oldWorkshopIndex, 1);
 										enrolledB[block + 1][oldWorkshopNum].push(student.ParticipantID);
 									}
+									enrolledB[block][workshopNum].push(student.ParticipantID);
+									enrolledB[block - 1][workshopNum].push(student.ParticipantID);
+									student[getBlock(block)] = workshopName;
+									student[getBlock(block - 1)] = workshopName;
+								} else {
+									enrolledB[block][workshopNum].push(student.ParticipantID);
+									enrolledB[block + 1][workshopNum].push(student.ParticipantID);
+									student[getBlock(block)] = workshopName;
+									student[getBlock(block + 1)] = workshopName;
 								}
-								enrolledB[block][workshopNum].push(student.ParticipantID);
-								enrolledB[block - 1][workshopNum].push(student.ParticipantID);
-								student[getBlock(block)] = choice;
-								student[getBlock(block - 1)] = choice;
 								studentB += 2;
 							}
 						}
@@ -167,7 +177,7 @@ export function schedule(
 								`A.${j + 1}` !== doubleBlock
 							) {
 								enrolledA[i][j].push(student.ParticipantID);
-								student[block] = `A.${j + 1}`;
+								student[block] = getWorkshopName(workshops, numWorkshopsA, `A.${j + 1}`);
 								studentA++;
 								break;
 							}
@@ -191,7 +201,7 @@ export function schedule(
 								`B.${j + 1}` !== doubleBlock
 							) {
 								enrolledB[i][j].push(student.ParticipantID);
-								student[block] = `B.${j + 1}`;
+								student[block] = getWorkshopName(workshops, numWorkshopsA, `B.${j + 1}`);
 								studentB++;
 								break;
 							}
@@ -205,8 +215,8 @@ export function schedule(
 			}
 			schedule.push(student);
 		}
-	} catch {
-		schedule = ['error'];
+	} catch (error: any) {
+		schedule = ['error', error];
 	}
 	return [schedule, enrolledA, enrolledB];
 }

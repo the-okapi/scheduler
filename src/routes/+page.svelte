@@ -15,7 +15,7 @@
 
 	let files: any = $state();
 	let workshopFiles: any = $state();
-	let data = $state();
+	let data: any = $state();
 	let fileInput: any = $state();
 	let workshopFileInput: any = $state();
 	let status = $state('waiting');
@@ -43,75 +43,104 @@
 	let workshops: Workshop[] = $state([]);
 	let localStorageData: WorkshopData[] = $state([]);
 
+	function getDefaultNames() {
+		let toReturn = [];
+		for (let i = 1; i <= numWorkshopsA; i++) {
+			toReturn.push({
+				Code: `A.${i}`,
+				Name: `A.${i}`
+			});
+		}
+		for (let i = 1; i <= numWorkshopsB; i++) {
+			toReturn.push({
+				Code: `B.${i}`,
+				Name: `B.${i}`
+			});
+		}
+		return toReturn;
+	}
+	function scheduleFunc(fileReader: FileReader, fileReader2: FileReader) {
+		let workshopNames;
+		if (workshopListSelected) workshopNames = csvJSON(String(fileReader2.result));
+		else workshopNames = getDefaultNames();
+		console.log(workshopNames);
+		let [scheduled, aWorkshops, bWorkshops] = schedule(
+			csvJSON(String(fileReader.result)),
+			$state.snapshot(maximum),
+			$state.snapshot(numChoices),
+			$state.snapshot(numWorkshopsA),
+			$state.snapshot(numWorkshopsB),
+			$state.snapshot(blocks),
+			$state.snapshot(numA),
+			$state.snapshot(blocks - numA),
+			$state.snapshot(doubleBlock),
+			$state.snapshot(filters),
+			workshopNames ?? []
+		);
+		if (scheduled[0] === 'error') {
+			status = 'error';
+			console.log(scheduled[1]);
+		} else {
+			data = scheduled;
+			let workshopsA: any = [];
+			let workshopsB: any = [];
+			for (let i = 0; i < numWorkshopsA; i++) {
+				workshopsA.push({});
+			}
+			for (let i = 0; i < numWorkshopsB; i++) {
+				workshopsB.push({});
+			}
+			for (let i = 0; i < blocks; i++) {
+				for (let j = 0; j < numWorkshopsA; j++) {
+					workshopsA[j][`Block${i + 1}`] = aWorkshops[i][j];
+				}
+				for (let j = 0; j < numWorkshopsB; j++) {
+					workshopsB[j][`Block${i + 1}`] = bWorkshops[i][j];
+				}
+			}
+			let num = 0;
+			for (let i = 0; i < workshopsA.length; i++) {
+				const blob = new Blob([JSON.stringify(workshopsA[i])], { type: 'application/json' });
+				let workshopUrl = URL.createObjectURL(blob);
+				workshops.push({
+					name: `A.${i + 1}`,
+					url: workshopUrl,
+					num
+				});
+				localStorageData.push({
+					name: `A.${i + 1}`,
+					data: workshopsA[i]
+				});
+				num++;
+			}
+			for (let i = 0; i < workshopsB.length; i++) {
+				const blob = new Blob([JSON.stringify(workshopsB[i])], { type: 'application/json' });
+				let workshopUrl = URL.createObjectURL(blob);
+				workshops.push({
+					name: `B.${i + 1}`,
+					url: workshopUrl,
+					num
+				});
+				localStorageData.push({
+					name: `B.${i + 1}`,
+					data: workshopsB[i]
+				});
+				num++;
+			}
+			localStorage.setItem('data', JSON.stringify(localStorageData));
+			status = 'finished';
+		}
+	}
 	function change() {
 		status = 'scheduling';
 		let file = files[0];
 		let fileReader = new FileReader();
 		fileReader.onload = () => {
-			let [scheduled, aWorkshops, bWorkshops] = schedule(
-				csvJSON(String(fileReader.result)),
-				$state.snapshot(maximum),
-				$state.snapshot(numChoices),
-				$state.snapshot(numWorkshopsA),
-				$state.snapshot(numWorkshopsB),
-				$state.snapshot(blocks),
-				$state.snapshot(numA),
-				$state.snapshot(blocks - numA),
-				$state.snapshot(doubleBlock),
-				$state.snapshot(filters)
-			);
-			if (scheduled[0] === 'error') {
-				status = 'error';
-			} else {
-				data = scheduled;
-				let workshopsA: any = [];
-				let workshopsB: any = [];
-				for (let i = 0; i < numWorkshopsA; i++) {
-					workshopsA.push({});
-				}
-				for (let i = 0; i < numWorkshopsB; i++) {
-					workshopsB.push({});
-				}
-				for (let i = 0; i < blocks; i++) {
-					for (let j = 0; j < numWorkshopsA; j++) {
-						workshopsA[j][`Block${i + 1}`] = aWorkshops[i][j];
-					}
-					for (let j = 0; j < numWorkshopsB; j++) {
-						workshopsB[j][`Block${i + 1}`] = bWorkshops[i][j];
-					}
-				}
-				let num = 0;
-				for (let i = 0; i < workshopsA.length; i++) {
-					const blob = new Blob([JSON.stringify(workshopsA[i])], { type: 'application/json' });
-					let workshopUrl = URL.createObjectURL(blob);
-					workshops.push({
-						name: `A.${i + 1}`,
-						url: workshopUrl,
-						num
-					});
-					localStorageData.push({
-						name: `A.${i + 1}`,
-						data: workshopsA[i]
-					});
-					num++;
-				}
-				for (let i = 0; i < workshopsB.length; i++) {
-					const blob = new Blob([JSON.stringify(workshopsB[i])], { type: 'application/json' });
-					let workshopUrl = URL.createObjectURL(blob);
-					workshops.push({
-						name: `B.${i + 1}`,
-						url: workshopUrl,
-						num
-					});
-					localStorageData.push({
-						name: `B.${i + 1}`,
-						data: workshopsB[i]
-					});
-					num++;
-				}
-				localStorage.setItem('data', JSON.stringify(localStorageData));
-				status = 'finished';
-			}
+			let fileReader2 = new FileReader();
+			if (workshopListSelected) {
+				fileReader2.onload = () => scheduleFunc(fileReader, fileReader2);
+				fileReader2.readAsText(workshopFiles[0]);
+			} else scheduleFunc(fileReader, fileReader2);
 		};
 		fileReader.readAsText(file);
 	}
@@ -124,7 +153,7 @@
 	function uploadWorkshopFile() {
 		workshopFileInput.click();
 	}
-	function fields() {
+	function getFields() {
 		let toReturn = ['ParticipantID'];
 		for (let i = 0; i < blocks; i++) {
 			toReturn.push(`Block${i + 1}`);
@@ -132,7 +161,7 @@
 		return toReturn;
 	}
 	function download() {
-		const blob = new Blob([jsonCSV(data, fields())]);
+		const blob = new Blob([jsonCSV(data, getFields())], { type: 'text/csv' });
 		url = URL.createObjectURL(blob);
 		downloadName = 'schedule.csv';
 		fileLink.click();
@@ -202,10 +231,10 @@
 	<label>Double block: <input type="text" bind:value={doubleBlock} /></label><br />
 	<form onsubmit={addFilter} name="Workshop Filters">
 		<label
-			><strong>Stop Workshop</strong>: Code:
+			><strong>Stop Workshop</strong>
 			<input bind:value={filterWorkshop} required type="text" />
-			Block: <input bind:value={filterBlock} required type="number" min={1} max={blocks} />
-			<button type="submit">Add</button></label
+			in block <input bind:value={filterBlock} required type="number" min={1} max={blocks} />
+			<button type="submit">Stop Workshop</button></label
 		>
 	</form>
 
@@ -217,7 +246,10 @@
 
 	<p>Input spreadsheet columns: ParticipantID, Choice1, Choice2, Choice3...</p>
 	<p>Input spreadsheet must be .CSV file</p>
-	<p>Workshop name uses '.' and letter is capital (A.1 instead of a1)</p>
+	<p>
+		Type.Number (Examples: <strong>A.1, B.11</strong>) is the format for the workshop code. Include
+		nothing else.
+	</p>
 {/if}
 
 <hr />
@@ -227,5 +259,8 @@
 <style>
 	:global(:root) {
 		font-family: system-ui;
+	}
+	:global(button) {
+		cursor: pointer;
 	}
 </style>
