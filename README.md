@@ -6,6 +6,7 @@
 - Must download twice
 - Multiple double blocks
 - Open custom lists
+- Download workshop list as .csv
 
 ## Possibilities
 
