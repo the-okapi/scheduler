@@ -5,6 +5,11 @@
 - **Testing**
 - Must download twice
 - Multiple double blocks
+- Open custom lists
+
+## Possibilities
+
+- Empty checkbox next to each student in lists
 
 ## Reminders
 
