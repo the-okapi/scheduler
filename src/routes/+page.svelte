@@ -239,6 +239,7 @@
 			{/each}
 		</div>
 		<br />
+        <button onclick={() => status = 'waiting'}>Back</button>
 		<button onclick={downloadList}>Download List</button>
 	</div>
 {:else}
