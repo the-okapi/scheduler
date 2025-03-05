@@ -76,7 +76,7 @@
 			$state.snapshot(blocks),
 			$state.snapshot(numA),
 			$state.snapshot(blocks - numA),
-			$state.snapshot(doubleBlock),
+			$state.snapshot(doubleBlock).split(' '),
 			$state.snapshot(filters),
 			workshopNames ?? []
 		);
@@ -257,7 +257,8 @@
 	<label>Number of B workshops: <input type="number" bind:value={numWorkshopsB} /></label><br />
 	<label>Number of A workshops per student: <input type="number" bind:value={numA} /></label><br />
 	<label>Number of blocks: <input type="number" bind:value={blocks} /></label><br />
-	<label>Double block: <input type="text" bind:value={doubleBlock} /></label><br />
+	<label>Double blocks (separated by space): <input type="text" bind:value={doubleBlock} /></label
+	><br />
 	<form onsubmit={addFilter} name="Workshop Filters">
 		<label
 			><strong>Stop Workshop</strong>
