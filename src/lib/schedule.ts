@@ -75,7 +75,12 @@ export function schedule(
 						!filters.includes({ workshop: choice, block: block + 1 })
 					) {
 						if (choice !== doubleBlock) {
-							student[getBlock(block)] = getWorkshopName(workshops, numWorkshopsA, choice);
+							enrolledA[block][workshopNum].push(student.ParticipantID);
+							student[getBlock(studentA + studentB)] = getWorkshopName(
+								workshops,
+								numWorkshopsA,
+								choice
+							);
 							studentA++;
 						} else if (studentA <= numA - 2) {
 							const workshopName = getWorkshopName(workshops, numWorkshopsA, choice);

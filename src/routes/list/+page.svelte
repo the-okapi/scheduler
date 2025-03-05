@@ -60,7 +60,7 @@
 				<div>
 					<h2>Block {num}</h2>
 					{#each data.data[`Block${num}`] as student}
-						{student}<br />
+						<input type="checkbox" /> {student}<br />
 					{/each}
 				</div>
 			{/each}

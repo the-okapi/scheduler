@@ -230,11 +230,12 @@
 	{/each}
 	<hr />
 
-	<p>Input spreadsheet columns: ParticipantID, Choice1, Choice2, Choice3...</p>
-	<p>Input spreadsheet must be .CSV file</p>
+	<p>Input spreadsheet columns: <strong>ParticipantID, Choice1, Choice2, Choice3...</strong></p>
+	<p>Workshop Names spreadsheet columns: <strong>Code, Name</strong></p>
+	<p>Input spreadsheet and Workshop Names spreadsheet must be <strong>.csv</strong> file</p>
 	<p>
-		Type.Number (Examples: <strong>A.1, B.11</strong>) is the format for the workshop code. Include
-		nothing else.
+		<strong>Type.Number</strong> (Examples: A.1, B.11) is the format for the workshop code. Include nothing
+		else.
 	</p>
 {/if}
 
