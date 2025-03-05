@@ -185,11 +185,24 @@
 		}
 		return toReturn;
 	}
+	function getCSVList(data: any) {
+		let toReturn = [];
+		for (let i = 1; i <= blocks; i++) {
+			const block = data.data[`Block${i}`];
+			for (let j = 0; j < block.length; j++) {
+				toReturn.push({
+					Block: i,
+					ParticipantID: block[j]
+				});
+			}
+		}
+		return jsonCSV(toReturn, ['Block', 'ParticipantID']);
+	}
 	function list(num: number, name: string) {
 		dataList = localStorageData[num];
-		const blob = new Blob([JSON.stringify(dataList)], { type: 'application/json' });
+		const blob = new Blob([getCSVList(dataList)], { type: 'test/csv' });
 		urlList = URL.createObjectURL(blob);
-		downloadNameList = `${name}.json`;
+		downloadNameList = `${name}.csv`;
 		status = 'list';
 	}
 </script>
