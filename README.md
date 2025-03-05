@@ -3,4 +3,3 @@
 ## Todo
 
 - **Testing**
-- Open custom lists
