@@ -130,6 +130,9 @@
 				});
 				num++;
 			}
+			const blob = new Blob([jsonCSV(data, getFields())], { type: 'text/csv' });
+			url = URL.createObjectURL(blob);
+			downloadName = 'schedule.csv';
 			status = 'finished';
 		}
 	}
@@ -152,12 +155,6 @@
 			toReturn.push(`Block${i + 1}`);
 		}
 		return toReturn;
-	}
-	function download() {
-		const blob = new Blob([jsonCSV(data, getFields())], { type: 'text/csv' });
-		url = URL.createObjectURL(blob);
-		downloadName = 'schedule.csv';
-		fileLink.click();
 	}
 	function addFilter(event: Event) {
 		event.preventDefault();
@@ -188,11 +185,12 @@
 		}
 		return toReturn;
 	}
-	function downloadList() {
+	function list(num: number, name: string) {
+		dataList = localStorageData[num];
 		const blob = new Blob([JSON.stringify(dataList)], { type: 'application/json' });
 		urlList = URL.createObjectURL(blob);
-		downloadNameList = `${data.name}.json`;
-		fileLinkList.click();
+		downloadNameList = `${name}.json`;
+		status = 'list';
 	}
 </script>
 
@@ -212,35 +210,32 @@
 {#if status === 'scheduling'}
 	<p>Please Wait...</p>
 {:else if status === 'finished'}
-	<button onclick={download}>Download Schedule</button><br /><br />
+	<button onclick={() => fileLink.click()}>Download Schedule</button><br /><br />
 	{#each workshops as workshop}
-		<button
-			onclick={() => {
-				dataList = localStorageData[workshop.num];
-				status = 'list';
-			}}>Workshop {workshop.name} List</button
-		>
+		<button onclick={() => list(workshop.num, workshop.name)}>Workshop {workshop.name} List</button>
 	{/each}<br /><br />
 	<button onclick={() => (status = 'waiting')}>Back</button>
 {:else if status === 'error'}
 	<p>There was an error.</p>
 {:else if status === 'list'}
 	<div class="main">
-		<h1>Workshop {getWorkshopName(workshopsList, numWorkshopsA, dataList.name)}</h1>
+		<h2>Workshop {getWorkshopName(workshopsList, numWorkshopsA, dataList.name)}</h2>
 
 		<div class="grid" style="grid-template-columns: {getBlocks()};">
 			{#each getLoopNums() as num}
 				<div>
 					<h2>Block {num}</h2>
 					{#each dataList.data[`Block${num}`] as student}
-						<input type="checkbox" /> {student}<br />
+						{#if student !== ''}
+							<input type="checkbox" /> {student}<br />
+						{/if}
 					{/each}
 				</div>
 			{/each}
 		</div>
 		<br />
-        <button onclick={() => status = 'waiting'}>Back</button>
-		<button onclick={downloadList}>Download List</button>
+		<button onclick={() => (status = 'finished')}>Back</button>
+		<button onclick={() => fileLinkList.click()}>Download List</button>
 	</div>
 {:else}
 	<button onclick={() => fileInput.click()}>Input Spreadsheet</button><br /><br />
