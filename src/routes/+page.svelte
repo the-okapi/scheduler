@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { csvJSON, jsonCSV, type Filter } from '$lib';
 	import { schedule } from '$lib/schedule';
+	import { getWorkshopName } from '$lib';
 
 	type Workshop = {
 		name: string;
@@ -39,9 +40,11 @@
 	let filters: Filter[] = $state([]);
 
 	let downloadName = $state('schedule.json');
+	let workshopsList: any[] = $state([]);
 
 	let workshops: Workshop[] = $state([]);
 	let localStorageData: WorkshopData[] = $state([]);
+	let dataList: any = $state();
 
 	function getDefaultNames() {
 		let toReturn = [];
@@ -63,7 +66,7 @@
 		let workshopNames;
 		if (workshopListSelected) workshopNames = csvJSON(String(fileReader2.result));
 		else workshopNames = getDefaultNames();
-		localStorage.setItem('workshops', JSON.stringify(workshopNames));
+		workshopsList = workshopNames;
 		let [scheduled, aWorkshops, bWorkshops] = schedule(
 			csvJSON(String(fileReader.result)),
 			$state.snapshot(maximum),
@@ -127,14 +130,11 @@
 				});
 				num++;
 			}
-			localStorage.setItem('data', JSON.stringify(localStorageData));
 			status = 'finished';
 		}
 	}
 	function change() {
 		status = 'scheduling';
-		localStorage.setItem('blocks', JSON.stringify(blocks));
-		localStorage.setItem('numWorkshopsA', JSON.stringify(numWorkshopsA));
 		let file = files[0];
 		let fileReader = new FileReader();
 		fileReader.onload = () => {
@@ -168,6 +168,32 @@
 		}
 		filters.push({ workshop: filterWorkshop, block: filterBlock });
 	}
+
+	let urlList = $state('');
+	let downloadNameList = $state('');
+
+	let fileLinkList: any = $state();
+
+	function getBlocks() {
+		let toReturn = '1fr';
+		for (let i = 1; i < blocks; i++) {
+			toReturn = toReturn.concat(' 1fr');
+		}
+		return toReturn;
+	}
+	function getLoopNums() {
+		let toReturn = [];
+		for (let i = 1; i <= blocks; i++) {
+			toReturn.push(i);
+		}
+		return toReturn;
+	}
+	function downloadList() {
+		const blob = new Blob([JSON.stringify(dataList)], { type: 'application/json' });
+		urlList = URL.createObjectURL(blob);
+		downloadNameList = `${data.name}.json`;
+		fileLinkList.click();
+	}
 </script>
 
 <input type="file" accept=".csv" bind:files onchange={change} hidden bind:this={fileInput} />
@@ -181,19 +207,40 @@
 />
 
 <a hidden href={url} download={downloadName} bind:this={fileLink}>Hidden</a>
+<a hidden href={urlList} download={downloadNameList} bind:this={fileLinkList}>Hidden</a>
 
 {#if status === 'scheduling'}
 	<p>Please Wait...</p>
 {:else if status === 'finished'}
 	<button onclick={download}>Download Schedule</button><br /><br />
 	{#each workshops as workshop}
-		<button onclick={() => window.open(`/list?workshop=${workshop.num}`)}
-			>Workshop {workshop.name} List</button
+		<button
+			onclick={() => {
+				dataList = localStorageData[workshop.num];
+				status = 'list';
+			}}>Workshop {workshop.name} List</button
 		>
 	{/each}<br /><br />
 	<button onclick={() => (status = 'waiting')}>Back</button>
 {:else if status === 'error'}
 	<p>There was an error.</p>
+{:else if status === 'list'}
+	<div class="main">
+		<h1>Workshop {getWorkshopName(workshopsList, numWorkshopsA, dataList.name)}</h1>
+
+		<div class="grid" style="grid-template-columns: {getBlocks()};">
+			{#each getLoopNums() as num}
+				<div>
+					<h2>Block {num}</h2>
+					{#each dataList.data[`Block${num}`] as student}
+						<input type="checkbox" /> {student}<br />
+					{/each}
+				</div>
+			{/each}
+		</div>
+		<br />
+		<button onclick={downloadList}>Download List</button>
+	</div>
 {:else}
 	<button onclick={() => fileInput.click()}>Input Spreadsheet</button><br /><br />
 	<button onclick={() => workshopFileInput.click()}>List of Workshops</button>
@@ -239,9 +286,11 @@
 	</p>
 {/if}
 
-<hr />
+{#if status !== 'list'}
+	<hr />
 
-<p>Website made by <strong>Unlimited Stuff Ltd.</strong></p>
+	<p>Website made by <strong>Unlimited Stuff Ltd.</strong></p>
+{/if}
 
 <style>
 	:global(:root) {
@@ -249,5 +298,11 @@
 	}
 	:global(button) {
 		cursor: pointer;
+	}
+	.main {
+		text-align: center;
+	}
+	.grid {
+		display: grid;
 	}
 </style>
