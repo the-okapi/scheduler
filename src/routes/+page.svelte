@@ -16,8 +16,12 @@
 
 	let files: any = $state();
 	let workshopFiles: any = $state();
+	let listFiles: any = $state();
+
 	let data: any = $state();
 	let fileInput: any = $state();
+	let listFileInput: any = $state();
+
 	let workshopFileInput: any = $state();
 	let status = $state('waiting');
 	let url = $state('');
@@ -40,7 +44,7 @@
 	let filters: Filter[] = $state([]);
 
 	let downloadName = $state('schedule.json');
-	let workshopsList: any[] = $state([]);
+	let workshopsList: any[] = $state(getDefaultNames());
 
 	let workshops: Workshop[] = $state([]);
 	let localStorageData: WorkshopData[] = $state([]);
@@ -63,9 +67,8 @@
 		return toReturn;
 	}
 	function scheduleFunc(fileReader: FileReader, fileReader2: FileReader) {
-		let workshopNames;
+		let workshopNames = getDefaultNames();
 		if (workshopListSelected) workshopNames = csvJSON(String(fileReader2.result));
-		else workshopNames = getDefaultNames();
 		workshopsList = workshopNames;
 		let [scheduled, aWorkshops, bWorkshops] = schedule(
 			csvJSON(String(fileReader.result)),
@@ -149,6 +152,26 @@
 		};
 		fileReader.readAsText(file);
 	}
+	function changeList() {
+		status = 'scheduling';
+		try {
+			const nameParts = listFiles[0].name.split('.');
+			const name = nameParts[0] + '.' + nameParts[1];
+			let fileReader = new FileReader();
+			fileReader.onload = () => {
+				dataList = toJSONList(String(fileReader.result), name);
+				console.log($state.snapshot(dataList));
+				const blob = new Blob([fileReader.result ?? ''], { type: 'test/csv' });
+				urlList = URL.createObjectURL(blob);
+				downloadNameList = `${name}.csv`;
+				status = 'list';
+			};
+			fileReader.readAsText(listFiles[0]);
+		} catch (error) {
+			console.log(error);
+			status = 'error';
+		}
+	}
 	function getFields() {
 		let toReturn = ['ParticipantID'];
 		for (let i = 0; i < blocks; i++) {
@@ -185,7 +208,10 @@
 		}
 		return toReturn;
 	}
-	function getCSVList(data: any) {
+	function getCSVList(dataRaw: any) {
+		let data;
+		if (typeof dataRaw === 'string') data = JSON.parse(dataRaw);
+		else data = dataRaw;
 		let toReturn = [];
 		for (let i = 1; i <= blocks; i++) {
 			const block = data.data[`Block${i}`];
@@ -198,6 +224,17 @@
 		}
 		return jsonCSV(toReturn, ['Block', 'ParticipantID']);
 	}
+	function toJSONList(data: string, name: string) {
+		let toReturn: any = {};
+		let json = csvJSON(data);
+		for (let i = 0; i < json.length; i++) {
+			if (toReturn[`Block${json[i].Block}`] === undefined) {
+				toReturn[`Block${json[i].Block}`] = [];
+			}
+			toReturn[`Block${json[i].Block}`].push(json[i].ParticipantID);
+		}
+		return { name, data: toReturn };
+	}
 	function list(num: number, name: string) {
 		dataList = localStorageData[num];
 		const blob = new Blob([getCSVList(dataList)], { type: 'test/csv' });
@@ -208,6 +245,14 @@
 </script>
 
 <input type="file" accept=".csv" bind:files onchange={change} hidden bind:this={fileInput} />
+<input
+	type="file"
+	accept=".csv"
+	bind:files={listFiles}
+	onchange={changeList}
+	hidden
+	bind:this={listFileInput}
+/>
 <input
 	type="file"
 	accept=".csv"
@@ -252,7 +297,8 @@
 	</div>
 {:else}
 	<button onclick={() => fileInput.click()}>Input Spreadsheet</button><br /><br />
-	<button onclick={() => workshopFileInput.click()}>List of Workshops</button>
+	<button onclick={() => workshopFileInput.click()}>List of Workshops</button><br /><br />
+	<button onclick={() => listFileInput.click()}>Custom List</button>
 	{#if workshopListSelected}List Selected{/if}<br /><br />
 	<label>
 		Maximum number of students per workshop: <input type="number" bind:value={maximum} /></label
