@@ -30,7 +30,6 @@
 	let workshopListSelected = $state(false);
 
 	let maximum = $state(25);
-	let minimum = $state(10);
 	let numChoices = $state(7);
 	let numWorkshopsA = $state(15);
 	let numWorkshopsB = $state(17);
@@ -302,9 +301,6 @@
 	<button onclick={() => listFileInput.click()}>Custom List</button><br /><br />
 	<label>
 		Maximum number of students per workshop: <input type="number" bind:value={maximum} /></label
-	><br />
-	<label
-		>Minimum number of students per workshop: <input type="number" bind:value={minimum} /></label
 	><br />
 	<label
 		>Number of choices per student in input spreadsheet: <input
