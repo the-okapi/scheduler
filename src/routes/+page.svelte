@@ -297,9 +297,9 @@
 	</div>
 {:else}
 	<button onclick={() => fileInput.click()}>Input Spreadsheet</button><br /><br />
-	<button onclick={() => workshopFileInput.click()}>List of Workshops</button><br /><br />
-	<button onclick={() => listFileInput.click()}>Custom List</button>
-	{#if workshopListSelected}List Selected{/if}<br /><br />
+	<button onclick={() => workshopFileInput.click()}>List of Workshops</button>
+	{#if workshopListSelected}{workshopFiles[0].name}{/if}<br /><br />
+	<button onclick={() => listFileInput.click()}>Custom List</button><br /><br />
 	<label>
 		Maximum number of students per workshop: <input type="number" bind:value={maximum} /></label
 	><br />
@@ -349,7 +349,7 @@
 {/if}
 
 <style>
-	:global(:root) {
+	:root {
 		font-family: system-ui;
 	}
 	:global(button) {
@@ -361,4 +361,32 @@
 	.grid {
 		display: grid;
 	}
+    button {
+		background-color: gainsboro;
+		color: black;
+		border: none;
+		border-radius: 1.5vh;
+		font-family: system-ui;
+		padding: 1.5vh 1vw;
+		font-size: 0.9em;
+		cursor: pointer;
+		font-family: system-ui;
+		text-decoration: none;
+	}
+	input {
+		width: fit-content;
+		text-decoration: none;
+		color: black;
+		border: 1px solid lightgray;
+		border-radius: 1.5vh;
+		font-family: system-ui;
+		padding: 1.5vh 1vw;
+		font-size: 0.9em;
+		margin: 0.25vh 0.5vw;
+		cursor: text;
+		font-family: system-ui;
+	}
+    button:hover {
+        background-color: lightgray;
+    }
 </style>
