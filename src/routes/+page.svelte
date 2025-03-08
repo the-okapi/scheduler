@@ -27,12 +27,28 @@
 	let url = $state('');
 	let fileLink: any = $state();
 
+	let inputFileLink: any = $state();
+	let namesFileLink: any = $state();
+	let listFileLink: any = $state();
+
+	const inputBlob = new Blob(
+		['ParticipantID,Choice1,Choice2,Choice3,Choice4,Choice5,Choice6,Choice7'],
+		{ type: 'text/csv' }
+	);
+	const inputUrl = URL.createObjectURL(inputBlob);
+
+	const namesBlob = new Blob(['Code,Name'], { type: 'text/csv' });
+	const namesUrl = URL.createObjectURL(namesBlob);
+
+	const listBlob = new Blob(['Block,ParticipantID'], { type: 'text/csv' });
+	const listUrl = URL.createObjectURL(listBlob);
+
 	let workshopListSelected = $state(false);
 
 	let maximum = $state(25);
-	let numChoices = $state(7);
-	let numWorkshopsA = $state(15);
-	let numWorkshopsB = $state(17);
+	let numChoices = $state(14);
+	let numWorkshopsA = $state(17);
+	let numWorkshopsB = $state(15);
 	let blocks = $state(4);
 	let numA = $state(2);
 	let doubleBlock = $state('A.3');
@@ -45,7 +61,8 @@
 	let downloadName = $state('schedule.json');
 	let workshopsList: any[] = $state(getDefaultNames());
 
-	let workshops: Workshop[] = $state([]);
+	let workshopsAList: Workshop[] = $state([]);
+	let workshopsBList: Workshop[] = $state([]);
 	let localStorageData: WorkshopData[] = $state([]);
 	let dataList: any = $state();
 
@@ -69,6 +86,7 @@
 		let workshopNames = getDefaultNames();
 		if (workshopListSelected) workshopNames = csvJSON(String(fileReader2.result));
 		workshopsList = workshopNames;
+        const doubleBlockSnapshot = $state.snapshot(doubleBlock);
 		let [scheduled, aWorkshops, bWorkshops] = schedule(
 			csvJSON(String(fileReader.result)),
 			$state.snapshot(maximum),
@@ -78,7 +96,7 @@
 			$state.snapshot(blocks),
 			$state.snapshot(numA),
 			$state.snapshot(blocks - numA),
-			$state.snapshot(doubleBlock).split(' '),
+			doubleBlockSnapshot.includes(' ') ? doubleBlockSnapshot.split(' ') : [doubleBlockSnapshot],
 			$state.snapshot(filters),
 			workshopNames ?? []
 		);
@@ -107,7 +125,7 @@
 			for (let i = 0; i < workshopsA.length; i++) {
 				const blob = new Blob([JSON.stringify(workshopsA[i])], { type: 'application/json' });
 				let workshopUrl = URL.createObjectURL(blob);
-				workshops.push({
+				workshopsAList.push({
 					name: `A.${i + 1}`,
 					url: workshopUrl,
 					num
@@ -121,7 +139,7 @@
 			for (let i = 0; i < workshopsB.length; i++) {
 				const blob = new Blob([JSON.stringify(workshopsB[i])], { type: 'application/json' });
 				let workshopUrl = URL.createObjectURL(blob);
-				workshops.push({
+				workshopsBList.push({
 					name: `B.${i + 1}`,
 					url: workshopUrl,
 					num
@@ -159,7 +177,6 @@
 			let fileReader = new FileReader();
 			fileReader.onload = () => {
 				dataList = toJSONList(String(fileReader.result), name);
-				console.log($state.snapshot(dataList));
 				const blob = new Blob([fileReader.result ?? ''], { type: 'test/csv' });
 				urlList = URL.createObjectURL(blob);
 				downloadNameList = `${name}.csv`;
@@ -263,12 +280,18 @@
 
 <a hidden href={url} download={downloadName} bind:this={fileLink}>Hidden</a>
 <a hidden href={urlList} download={downloadNameList} bind:this={fileLinkList}>Hidden</a>
+<a hidden href={inputUrl} download="input.csv" bind:this={inputFileLink}>Hidden</a>
+<a hidden href={namesUrl} download="names.csv" bind:this={namesFileLink}>Hidden</a>
+<a hidden href={listUrl} download="list.csv" bind:this={listFileLink}>Hidden</a>
 
 {#if status === 'scheduling'}
 	<p>Please Wait...</p>
 {:else if status === 'finished'}
 	<button onclick={() => fileLink.click()}>Download Schedule</button><br /><br />
-	{#each workshops as workshop}
+	{#each workshopsAList as workshop}
+		<button onclick={() => list(workshop.num, workshop.name)}>Workshop {workshop.name} List</button>
+	{/each}<br /><br />
+	{#each workshopsBList as workshop}
 		<button onclick={() => list(workshop.num, workshop.name)}>Workshop {workshop.name} List</button>
 	{/each}<br /><br />
 	<button onclick={() => (status = 'waiting')}>Back</button>
@@ -295,10 +318,16 @@
 		<button onclick={() => fileLinkList.click()}>Download List</button>
 	</div>
 {:else}
-	<button onclick={() => fileInput.click()}>Input Spreadsheet</button><br /><br />
+	<button onclick={() => fileInput.click()}>Input Spreadsheet</button><button
+		onclick={() => inputFileLink.click()}>Download Example</button
+	><br /><br />
 	<button onclick={() => workshopFileInput.click()}>List of Workshops</button>
-	{#if workshopListSelected}{workshopFiles[0].name}{/if}<br /><br />
-	<button onclick={() => listFileInput.click()}>Custom List</button><br /><br />
+	{#if workshopListSelected}{workshopFiles[0].name}{/if}<button
+		onclick={() => namesFileLink.click()}>Download Example</button
+	><br /><br />
+	<button onclick={() => listFileInput.click()}>Custom List</button><button
+		onclick={() => listFileLink.click()}>Download Example</button
+	><br /><br />
 	<label>
 		Maximum number of students per workshop: <input type="number" bind:value={maximum} /></label
 	><br />
@@ -346,10 +375,8 @@
 
 <style>
 	:root {
-		font-family: system-ui;
-	}
-	:global(button) {
-		cursor: pointer;
+		--font: system-ui;
+		font-family: var(--font);
 	}
 	.main {
 		text-align: center;
@@ -357,7 +384,7 @@
 	.grid {
 		display: grid;
 	}
-    button {
+	button {
 		background-color: gainsboro;
 		color: black;
 		border: none;
@@ -366,7 +393,8 @@
 		padding: 1.5vh 1vw;
 		font-size: 0.9em;
 		cursor: pointer;
-		font-family: system-ui;
+		margin: 0.25vh 0.5vw;
+		font-family: var(--font);
 		text-decoration: none;
 	}
 	input {
@@ -375,14 +403,16 @@
 		color: black;
 		border: 1px solid lightgray;
 		border-radius: 1.5vh;
-		font-family: system-ui;
+		font-family: var(--font);
 		padding: 1.5vh 1vw;
 		font-size: 0.9em;
 		margin: 0.25vh 0.5vw;
 		cursor: text;
-		font-family: system-ui;
 	}
-    button:hover {
-        background-color: lightgray;
-    }
+	input[type='checkbox'] {
+		cursor: pointer;
+	}
+	button:hover {
+		background-color: lightgray;
+	}
 </style>

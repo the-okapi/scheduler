@@ -1,4 +1,4 @@
-import { getBlock, type WorkshopName, type Filter, getWorkshopName } from '$lib';
+import { getBlock, type WorkshopName, type Filter, getWorkshopName, parseCode, studentIsIn } from '$lib';
 
 export function schedule(
 	students: any[],
@@ -63,7 +63,7 @@ export function schedule(
 			let studentA = 0;
 			let studentB = 0;
 			for (let i = 0; i < choices.length; i++) {
-				const choice = choices[i];
+                let choice = parseCode(choices[i]);
 				const choiceSplit = choice.split('.');
 				const workshopGroup = choiceSplit[0];
 				const wNum = choiceSplit[1];
@@ -170,11 +170,14 @@ export function schedule(
 								studentB += 2;
 							}
 						}
-					}
+					} else {
+                        continue;
+                    }
 				}
 			}
 			let i = 0;
 			if (studentA < numA) {
+                console.log(studentA, numA, student.ParticipantID);
 				while (studentA < numA) {
 					const block = getBlock(i);
 					if (student[block] === '') {
@@ -182,7 +185,8 @@ export function schedule(
 							if (
 								enrolledA[i][j].length < maximum &&
 								!filters.includes({ workshop: `A.${j + 1}`, block: i + 1 }) &&
-								!doubleBlocks.includes(`A.${j + 1}`)
+								!doubleBlocks.includes(`A.${j + 1}`) &&
+                                !studentIsIn(student, blocks, `A.${j+1}`)
 							) {
 								enrolledA[i][j].push(student.ParticipantID);
 								student[block] = getWorkshopName(workshops, numWorkshopsA, `A.${j + 1}`);
@@ -199,6 +203,7 @@ export function schedule(
 			}
 			i = 0;
 			if (studentB < numB) {
+                console.log(studentB, numB, student.ParticipantID);
 				while (studentB < numB) {
 					const block = getBlock(i);
 					if (student[block] === '') {
@@ -206,7 +211,8 @@ export function schedule(
 							if (
 								enrolledB[i][j].length < maximum &&
 								!filters.includes({ workshop: `B.${j + 1}`, block: i + 1 }) &&
-								!doubleBlocks.includes(`B.${j + 1}`)
+								!doubleBlocks.includes(`B.${j + 1}`) &&
+                                !studentIsIn(student, blocks, `B.${j+1}`)
 							) {
 								enrolledB[i][j].push(student.ParticipantID);
 								student[block] = getWorkshopName(workshops, numWorkshopsA, `B.${j + 1}`);
