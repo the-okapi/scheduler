@@ -66,7 +66,7 @@
 	let localStorageData: WorkshopData[] = $state([]);
 	let dataList: any = $state();
 
-    let customList = $state(false);
+	let customList = $state(false);
 
 	function getDefaultNames() {
 		let toReturn = [];
@@ -88,7 +88,7 @@
 		let workshopNames = getDefaultNames();
 		if (workshopListSelected) workshopNames = csvJSON(String(fileReader2.result));
 		workshopsList = workshopNames;
-        const doubleBlockSnapshot = $state.snapshot(doubleBlock);
+		const doubleBlockSnapshot = $state.snapshot(doubleBlock);
 		let [scheduled, aWorkshops, bWorkshops] = schedule(
 			csvJSON(String(fileReader.result)),
 			$state.snapshot(maximum),
@@ -182,7 +182,7 @@
 				const blob = new Blob([fileReader.result ?? ''], { type: 'test/csv' });
 				urlList = URL.createObjectURL(blob);
 				downloadNameList = `${name}.csv`;
-                customList = true;
+				customList = true;
 				status = 'list';
 			};
 			fileReader.readAsText(listFiles[0]);
@@ -255,22 +255,22 @@
 		return { name, data: toReturn };
 	}
 	function list(num: number, name: string) {
-        customList = false;
+		customList = false;
 		dataList = localStorageData[num];
 		const blob = new Blob([getCSVList(dataList)], { type: 'test/csv' });
 		urlList = URL.createObjectURL(blob);
 		downloadNameList = `${name}.csv`;
 		status = 'list';
 	}
-    function back() {
-        fileInput.value = null;
-        listFileInput.value = null;
-        status = 'waiting';
-    }
-    function backList() {
-        if (customList) back()
-        else status = 'finished';
-    }
+	function back() {
+		fileInput.value = null;
+		listFileInput.value = null;
+		status = 'waiting';
+	}
+	function backList() {
+		if (customList) back();
+		else status = 'finished';
+	}
 </script>
 
 <input type="file" accept=".csv" bind:files onchange={change} hidden bind:this={fileInput} />

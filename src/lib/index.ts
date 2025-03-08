@@ -58,20 +58,41 @@ export function getWorkshopName(workshops: WorkshopName[], numA: number, code: s
 }
 
 export function parseCode(code: string) {
-    if (code[2] === '0') {
-        let split = code.split('');
-        split.splice(2, 1);
-        return split.join('');
-    } else {
-        return code;
-    }
+	if (code[2] === '0') {
+		const split = code.split('');
+		split.splice(2, 1);
+		return split.join('');
+	} else {
+		return code;
+	}
 }
 
 export function studentIsIn(student: any, blocks: number, code: string) {
-    for (let i = 1; i <= blocks; i++) {
-        if (student[`Block${i}`] === code) {
-            return true;
-        }
-    }
-    return false;
+	for (let i = 1; i <= blocks; i++) {
+		if (student[`Block${i}`] === code) {
+			return true;
+		}
+	}
+	return false;
+}
+
+export function getFirstAvailable(student: any, blocks: number) {
+	for (let i = blocks - 1; i >= 0; i--) {
+		if (student[`Block${i + 1}`] === '') {
+			return i;
+		}
+	}
+	return -1;
+}
+
+export function getFirstAvailableDoubleBlock(student: any, blocks: number) {
+	for (let i = 1; i <= blocks; i++) {
+		if (i % 2 === 0 || i + 1 === blocks) {
+			continue;
+		}
+		if (student[`Block${i}`] === '' && student[`Block${i + 1}`] === '') {
+			return i;
+		}
+		return -1;
+	}
 }

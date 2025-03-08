@@ -1,4 +1,13 @@
-import { getBlock, type WorkshopName, type Filter, getWorkshopName, parseCode, studentIsIn } from '$lib';
+import {
+	getBlock,
+	type WorkshopName,
+	type Filter,
+	getWorkshopName,
+	parseCode,
+	studentIsIn,
+	getFirstAvailable,
+	getFirstAvailableDoubleBlock
+} from '$lib';
 
 export function schedule(
 	students: any[],
@@ -50,7 +59,7 @@ export function schedule(
 			if (person.Choice1 === undefined) {
 				continue;
 			}
-			let choices = [];
+			const choices = [];
 			for (let i = 0; i < numChoices; i++) {
 				choices.push(person[`Choice${i + 1}`]);
 			}
@@ -62,168 +71,113 @@ export function schedule(
 			}
 			let studentA = 0;
 			let studentB = 0;
-			for (let i = 0; i < choices.length; i++) {
-                let choice = parseCode(choices[i]);
-				const choiceSplit = choice.split('.');
-				const workshopGroup = choiceSplit[0];
-				const wNum = choiceSplit[1];
+			choicesWhile: for (let j = 0; j < choices.length; j++) {
+				const choice = parseCode(choices[j]);
+				const [workshopGroup, wNum] = choice.split('.');
 				const workshopNum = Number(wNum) - 1;
 				if (workshopGroup === 'A' && studentA < numA) {
-					const block = studentA + studentB;
+					const block = getFirstAvailable(student, blocks);
 					if (
 						enrolledA[block][workshopNum].length < maximum &&
-						!filters.includes({ workshop: choice, block: block + 1 })
+						!filters.includes({ workshop: choice, block })
 					) {
 						if (!doubleBlocks.includes(choice)) {
 							enrolledA[block][workshopNum].push(student.ParticipantID);
-							student[getBlock(studentA + studentB)] = getWorkshopName(
-								workshops,
-								numWorkshopsA,
-								choice
-							);
+							student[getBlock(block)] = getWorkshopName(workshops, numWorkshopsA, choice);
 							studentA++;
-						} else if (studentA <= numA - 2) {
+							choices.splice(j, 1);
+						} else {
 							const workshopName = getWorkshopName(workshops, numWorkshopsA, choice);
-							if (studentA + (studentB % 2) === 1) {
-								const oldWorkshop = student[getBlock(block - 1)];
-								if (!doubleBlocks.includes(oldWorkshop)) {
-									const [oldWorkshopGroup, oldWNum] = oldWorkshop.split('.');
-									const oldWorkshopNum = Number(oldWNum) - 1;
-									student[getBlock(block + 1)] = oldWorkshop;
-									if (oldWorkshopGroup === 'A') {
-										const oldWorkshopIndex = enrolledA[block - 1][oldWorkshopNum].findIndex(
-											(a) => a === student.ParticipantID
-										);
-										enrolledA[block - 1][oldWorkshopNum].splice(oldWorkshopIndex, 1);
-										enrolledA[block + 1][oldWorkshopNum].push(student.ParticipantID);
-									} else {
-										const oldWorkshopIndex = enrolledB[block - 1][oldWorkshopNum].findIndex(
-											(a) => a === student.ParticipantID
-										);
-										enrolledB[block - 1][oldWorkshopNum].splice(oldWorkshopIndex, 1);
-										enrolledB[block + 1][oldWorkshopNum].push(student.ParticipantID);
-									}
-									enrolledA[block][workshopNum].push(student.ParticipantID);
-									enrolledA[block - 1][workshopNum].push(student.ParticipantID);
-									student[getBlock(block)] = workshopName;
-									student[getBlock(block - 1)] = workshopName;
-								}
-							} else {
-								enrolledA[block][workshopNum].push(student.ParticipantID);
-								enrolledA[block + 1][workshopNum].push(student.ParticipantID);
-								student[getBlock(block)] = workshopName;
-								student[getBlock(block + 1)] = workshopName;
+							const firstDoubleBlock = getFirstAvailableDoubleBlock(student, blocks) ?? -1;
+							if (firstDoubleBlock === -1) {
+								j++;
+								continue choicesWhile;
 							}
+							student[`Block${firstDoubleBlock}`] = workshopName;
+							student[`Block${firstDoubleBlock + 1}`] = workshopName;
 							studentA += 2;
+							enrolledA[firstDoubleBlock][workshopNum].push(student.ParticipantID);
+							enrolledA[firstDoubleBlock + 1][workshopNum].push(student.ParticipantID);
+							choices.splice(j, 1);
 						}
 					} else {
-						continue;
+						j++;
 					}
 				}
 				if (workshopGroup === 'B' && studentB < numB) {
-					const block = studentA + studentB;
+					const block = getFirstAvailable(student, blocks);
 					if (
 						enrolledB[block][workshopNum].length < maximum &&
 						!filters.includes({ workshop: choice, block: block + 1 })
 					) {
 						if (!doubleBlocks.includes(choice)) {
 							enrolledB[block][workshopNum].push(student.ParticipantID);
-							student[getBlock(studentA + studentB)] = getWorkshopName(
-								workshops,
-								numWorkshopsA,
-								choice
-							);
+							student[getBlock(block)] = getWorkshopName(workshops, numWorkshopsA, choice);
 							studentB++;
+							choices.splice(j, 1);
 						} else {
 							const workshopName = getWorkshopName(workshops, numWorkshopsA, choice);
-							if (studentB <= numB - 2) {
-								if (studentA + (studentB % 2) === 1) {
-									const oldWorkshop = student[getBlock(block - 1)];
-									if (!doubleBlocks.includes(oldWorkshop)) {
-										const [oldWorkshopGroup, oldWNum] = oldWorkshop.split('.');
-										const oldWorkshopNum = Number(oldWNum) - 1;
-										student[getBlock(block + 2)] = oldWorkshop;
-										if (oldWorkshopGroup === 'A') {
-											const oldWorkshopIndex = enrolledA[block - 1][oldWorkshopNum].findIndex(
-												(a) => a === student.ParticipantID
-											);
-											enrolledA[block - 1][oldWorkshopNum].splice(oldWorkshopIndex, 1);
-											enrolledA[block + 1][oldWorkshopNum].push(student.ParticipantID);
-										} else {
-											const oldWorkshopIndex = enrolledB[block - 1][oldWorkshopNum].findIndex(
-												(a) => a === student.ParticipantID
-											);
-											enrolledB[block - 1][oldWorkshopNum].splice(oldWorkshopIndex, 1);
-											enrolledB[block + 1][oldWorkshopNum].push(student.ParticipantID);
-										}
-										enrolledB[block][workshopNum].push(student.ParticipantID);
-										enrolledB[block - 1][workshopNum].push(student.ParticipantID);
-										student[getBlock(block)] = workshopName;
-										student[getBlock(block - 1)] = workshopName;
-									}
-								} else {
-									enrolledB[block][workshopNum].push(student.ParticipantID);
-									enrolledB[block + 1][workshopNum].push(student.ParticipantID);
-									student[getBlock(block)] = workshopName;
-									student[getBlock(block + 1)] = workshopName;
-								}
-								studentB += 2;
+							const firstDoubleBlock = getFirstAvailableDoubleBlock(student, blocks) ?? -1;
+							if (firstDoubleBlock === -1) {
+								j++;
+								continue choicesWhile;
 							}
+							student[`Block${firstDoubleBlock}`] = workshopName;
+							student[`Block${firstDoubleBlock + 1}`] = workshopName;
+							studentB += 2;
+							enrolledB[block][workshopNum].push(student.ParticipantID);
+							enrolledB[block + 1][workshopNum].push(student.ParticipantID);
+							choices.splice(j, 1);
 						}
 					} else {
-                        continue;
-                    }
+						j++;
+					}
 				}
 			}
 			for (let i = 0; i < blocks; i++) {
-                if (studentA === numA) {
-                    break;
-                }
-                const block = getBlock(i);
-                if (student[block] !== '') {
-                    continue;
-                }
-                for (let j = 0; j < numWorkshopsA; j++) {
-                    if (enrolledA[i][j].length < maximum &&
-                        !filters.includes({ workshop: `A.${j + 1}`, block: i + 1 }) &&
-                        !doubleBlocks.includes(`A.${j + 1}`) &&
-                        !studentIsIn(student, blocks, `A.${j+1}`)
-                    ) {
-                        enrolledA[i][j].push(student.ParticipantID);
-                        student[block] = `A.${j + 1}`;
-                        studentA++;
-                        break;
-                    }
-                }
-            }
-            for (let i = 0; i < blocks; i++) {
-                if (studentB === numB) {
-                    break;
-                }
-                const block = getBlock(i);
-                if (student[block] !== '') {
-                    continue;
-                }
-                for (let j = 0; j < numWorkshopsB; j++) {
-                    if (enrolledB[i][j].length < maximum &&
-                        !filters.includes({ workshop: `B.${j + 1}`, block: i + 1 }) &&
-                        !doubleBlocks.includes(`B.${j + 1}`) &&
-                        !studentIsIn(student, blocks, `B.${j+1}`)
-                    ) {
-                        enrolledB[i][j].push(student.ParticipantID);
-                        student[block] = `B.${j + 1}`;
-                        studentB++;
-                        break;
-                    } else {
-                        console.log(student, `B.${j + 1}`, i,
-                            enrolledB[i][j].length < maximum,
-                            !filters.includes({ workshop: `B.${j + 1}`, block: i + 1 }),
-                            !doubleBlocks.includes(`B.${j + 1}`),
-                            !studentIsIn(student, blocks, `B.${j+1}`)
-                        );
-                    }
-                }
-            }
+				if (studentA === numA) {
+					break;
+				}
+				const block = getBlock(i);
+				if (student[block] !== '') {
+					continue;
+				}
+				for (let j = 0; j < numWorkshopsA; j++) {
+					if (
+						enrolledA[i][j].length < maximum &&
+						!filters.includes({ workshop: `A.${j + 1}`, block: i + 1 }) &&
+						!doubleBlocks.includes(`A.${j + 1}`) &&
+						!studentIsIn(student, blocks, `A.${j + 1}`)
+					) {
+						enrolledA[i][j].push(student.ParticipantID);
+						student[block] = `A.${j + 1}`;
+						studentA++;
+						break;
+					}
+				}
+			}
+			for (let i = 0; i < blocks; i++) {
+				if (studentB === numB) {
+					break;
+				}
+				const block = getBlock(i);
+				if (student[block] !== '') {
+					continue;
+				}
+				for (let j = 0; j < numWorkshopsB; j++) {
+					if (
+						enrolledB[i][j].length < maximum &&
+						!filters.includes({ workshop: `B.${j + 1}`, block: i + 1 }) &&
+						!doubleBlocks.includes(`B.${j + 1}`) &&
+						!studentIsIn(student, blocks, `B.${j + 1}`)
+					) {
+						enrolledB[i][j].push(student.ParticipantID);
+						student[block] = `B.${j + 1}`;
+						studentB++;
+						break;
+					}
+				}
+			}
 			schedule.push(student);
 		}
 	} catch (error: any) {
