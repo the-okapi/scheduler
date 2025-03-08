@@ -50,7 +50,7 @@ export function schedule(
 			if (person.Choice1 === undefined) {
 				continue;
 			}
-			const choices = [];
+			let choices = [];
 			for (let i = 0; i < numChoices; i++) {
 				choices.push(person[`Choice${i + 1}`]);
 			}
@@ -175,58 +175,55 @@ export function schedule(
                     }
 				}
 			}
-			let i = 0;
-			if (studentA < numA) {
-                console.log(studentA, numA, student.ParticipantID);
-				while (studentA < numA) {
-					const block = getBlock(i);
-					if (student[block] === '') {
-						for (let j = 0; j < enrolledA.length; j++) {
-							if (
-								enrolledA[i][j].length < maximum &&
-								!filters.includes({ workshop: `A.${j + 1}`, block: i + 1 }) &&
-								!doubleBlocks.includes(`A.${j + 1}`) &&
-                                !studentIsIn(student, blocks, `A.${j+1}`)
-							) {
-								enrolledA[i][j].push(student.ParticipantID);
-								student[block] = getWorkshopName(workshops, numWorkshopsA, `A.${j + 1}`);
-								studentA++;
-								break;
-							}
-						}
-					}
-					if (i > blocks) {
-						break;
-					}
-					i++;
-				}
-			}
-			i = 0;
-			if (studentB < numB) {
-                console.log(studentB, numB, student.ParticipantID);
-				while (studentB < numB) {
-					const block = getBlock(i);
-					if (student[block] === '') {
-						for (let j = 0; j < enrolledB.length; j++) {
-							if (
-								enrolledB[i][j].length < maximum &&
-								!filters.includes({ workshop: `B.${j + 1}`, block: i + 1 }) &&
-								!doubleBlocks.includes(`B.${j + 1}`) &&
-                                !studentIsIn(student, blocks, `B.${j+1}`)
-							) {
-								enrolledB[i][j].push(student.ParticipantID);
-								student[block] = getWorkshopName(workshops, numWorkshopsA, `B.${j + 1}`);
-								studentB++;
-								break;
-							}
-						}
-					}
-					if (i > blocks) {
-						break;
-					}
-					i++;
-				}
-			}
+			for (let i = 0; i < blocks; i++) {
+                if (studentA === numA) {
+                    break;
+                }
+                const block = getBlock(i);
+                if (student[block] !== '') {
+                    continue;
+                }
+                for (let j = 0; j < numWorkshopsA; j++) {
+                    if (enrolledA[i][j].length < maximum &&
+                        !filters.includes({ workshop: `A.${j + 1}`, block: i + 1 }) &&
+                        !doubleBlocks.includes(`A.${j + 1}`) &&
+                        !studentIsIn(student, blocks, `A.${j+1}`)
+                    ) {
+                        enrolledA[i][j].push(student.ParticipantID);
+                        student[block] = `A.${j + 1}`;
+                        studentA++;
+                        break;
+                    }
+                }
+            }
+            for (let i = 0; i < blocks; i++) {
+                if (studentB === numB) {
+                    break;
+                }
+                const block = getBlock(i);
+                if (student[block] !== '') {
+                    continue;
+                }
+                for (let j = 0; j < numWorkshopsB; j++) {
+                    if (enrolledB[i][j].length < maximum &&
+                        !filters.includes({ workshop: `B.${j + 1}`, block: i + 1 }) &&
+                        !doubleBlocks.includes(`B.${j + 1}`) &&
+                        !studentIsIn(student, blocks, `B.${j+1}`)
+                    ) {
+                        enrolledB[i][j].push(student.ParticipantID);
+                        student[block] = `B.${j + 1}`;
+                        studentB++;
+                        break;
+                    } else {
+                        console.log(student, `B.${j + 1}`, i,
+                            enrolledB[i][j].length < maximum,
+                            !filters.includes({ workshop: `B.${j + 1}`, block: i + 1 }),
+                            !doubleBlocks.includes(`B.${j + 1}`),
+                            !studentIsIn(student, blocks, `B.${j+1}`)
+                        );
+                    }
+                }
+            }
 			schedule.push(student);
 		}
 	} catch (error: any) {

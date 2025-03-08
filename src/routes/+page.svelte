@@ -66,6 +66,8 @@
 	let localStorageData: WorkshopData[] = $state([]);
 	let dataList: any = $state();
 
+    let customList = $state(false);
+
 	function getDefaultNames() {
 		let toReturn = [];
 		for (let i = 1; i <= numWorkshopsA; i++) {
@@ -102,7 +104,7 @@
 		);
 		if (scheduled[0] === 'error') {
 			status = 'error';
-			console.log(scheduled[1]);
+			console.error(scheduled[1]);
 		} else {
 			data = scheduled;
 			let workshopsA: any = [];
@@ -180,11 +182,12 @@
 				const blob = new Blob([fileReader.result ?? ''], { type: 'test/csv' });
 				urlList = URL.createObjectURL(blob);
 				downloadNameList = `${name}.csv`;
+                customList = true;
 				status = 'list';
 			};
 			fileReader.readAsText(listFiles[0]);
 		} catch (error) {
-			console.log(error);
+			console.error(error);
 			status = 'error';
 		}
 	}
@@ -252,12 +255,22 @@
 		return { name, data: toReturn };
 	}
 	function list(num: number, name: string) {
+        customList = false;
 		dataList = localStorageData[num];
 		const blob = new Blob([getCSVList(dataList)], { type: 'test/csv' });
 		urlList = URL.createObjectURL(blob);
 		downloadNameList = `${name}.csv`;
 		status = 'list';
 	}
+    function back() {
+        fileInput.value = null;
+        listFileInput.value = null;
+        status = 'waiting';
+    }
+    function backList() {
+        if (customList) back()
+        else status = 'finished';
+    }
 </script>
 
 <input type="file" accept=".csv" bind:files onchange={change} hidden bind:this={fileInput} />
@@ -294,7 +307,7 @@
 	{#each workshopsBList as workshop}
 		<button onclick={() => list(workshop.num, workshop.name)}>Workshop {workshop.name} List</button>
 	{/each}<br /><br />
-	<button onclick={() => (status = 'waiting')}>Back</button>
+	<button onclick={back}>Back</button>
 {:else if status === 'error'}
 	<p>There was an error.</p>
 {:else if status === 'list'}
@@ -314,7 +327,7 @@
 			{/each}
 		</div>
 		<br />
-		<button onclick={() => (status = 'finished')}>Back</button>
+		<button onclick={backList}>Back</button>
 		<button onclick={() => fileLinkList.click()}>Download List</button>
 	</div>
 {:else}

@@ -2,4 +2,4 @@
 
 - **Testing**
 - Workshops not filling up properly
-- Don't have to reload to generate new schedule
+- Confirm don't autofill double blocks
