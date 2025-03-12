@@ -76,7 +76,7 @@ export function schedule(
 				const [workshopGroup, wNum] = choice.split('.');
 				const workshopNum = Number(wNum) - 1;
 				if (workshopGroup === 'A' && studentA < numA) {
-					const block = getFirstAvailable(student, blocks);
+					const block = getFirstAvailable(student, blocks, choice, enrolledA, maximum);
 					if (
 						enrolledA[block][workshopNum].length < maximum &&
 						!filters.includes({ workshop: choice, block })
@@ -105,7 +105,7 @@ export function schedule(
 					}
 				}
 				if (workshopGroup === 'B' && studentB < numB) {
-					const block = getFirstAvailable(student, blocks);
+					const block = getFirstAvailable(student, blocks, choice, enrolledB, maximum);
 					if (
 						enrolledB[block][workshopNum].length < maximum &&
 						!filters.includes({ workshop: choice, block: block + 1 })
@@ -134,6 +134,7 @@ export function schedule(
 					}
 				}
 			}
+            console.log(schedule);
 			for (let i = 0; i < blocks; i++) {
 				if (studentA === numA) {
 					break;

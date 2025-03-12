@@ -76,13 +76,15 @@ export function studentIsIn(student: any, blocks: number, code: string) {
 	return false;
 }
 
-export function getFirstAvailable(student: any, blocks: number) {
+export function getFirstAvailable(student: any, blocks: number, choice: string, enrolled: string[][][], maximum: number) {
+    const split = choice.split('.');
+    const workshopNum = Number(split[1]) - 1;
 	for (let i = blocks - 1; i >= 0; i--) {
-		if (student[`Block${i + 1}`] === '') {
+		if (student[`Block${i + 1}`] === '' && enrolled[i][workshopNum].length < maximum) {
 			return i;
 		}
 	}
-	return -1;
+	return 0;
 }
 
 export function getFirstAvailableDoubleBlock(student: any, blocks: number) {
