@@ -87,12 +87,18 @@ export function getFirstAvailable(student: any, blocks: number, choice: string, 
 	return 0;
 }
 
-export function getFirstAvailableDoubleBlock(student: any, blocks: number) {
-	for (let i = 1; i <= blocks; i++) {
-		if (i % 2 === 0 || i + 1 === blocks) {
+export function getFirstAvailableDoubleBlock(student: any, blocks: number, enrolled: string[][][], maximum: number, choice: string) {
+	const split = choice.split('.');
+    const workshopNum = Number(split[1]) - 1;
+    for (let i = 0; i < blocks; i++) {
+        console.log(i);
+		if (i % 2 === 1 || i + 1 === blocks) {
 			continue;
 		}
-		if (student[`Block${i}`] === '' && student[`Block${i + 1}`] === '') {
+		if (student[`Block${i + 1}`] === '' && student[`Block${i + 2}`] === '' &&
+            enrolled[i][workshopNum].length < maximum
+        ) {
+            console.log(i);
 			return i;
 		}
 		return -1;
