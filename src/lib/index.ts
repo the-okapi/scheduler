@@ -103,7 +103,6 @@ export function getFirstAvailableDoubleBlock(
 	const split = choice.split('.');
 	const workshopNum = Number(split[1]) - 1;
 	for (let i = 0; i < blocks; i++) {
-		console.log(i);
 		if (i % 2 === 1 || i + 1 === blocks) {
 			continue;
 		}
@@ -112,7 +111,6 @@ export function getFirstAvailableDoubleBlock(
 			student[`Block${i + 2}`] === '' &&
 			enrolled[i][workshopNum].length < maximum
 		) {
-			console.log(i);
 			return i;
 		}
 		return -1;
