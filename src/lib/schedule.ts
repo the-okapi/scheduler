@@ -157,8 +157,9 @@ export function schedule(
 						!doubleBlocks.includes(`A.${j + 1}`) &&
 						!studentIsIn(student, blocks, `A.${j + 1}`)
 					) {
+						const workshopName = getWorkshopName(workshops, numWorkshopsA, `A.${j + 1}`);
 						enrolledA[i][j].push(student.ParticipantID);
-						student[block] = `A.${j + 1}`;
+						student[block] = workshopName;
 						studentA++;
 						break;
 					}
@@ -179,8 +180,9 @@ export function schedule(
 						!doubleBlocks.includes(`B.${j + 1}`) &&
 						!studentIsIn(student, blocks, `B.${j + 1}`)
 					) {
+						const workshopName = getWorkshopName(workshops, numWorkshopsA, `B.${j + 1}`);
 						enrolledB[i][j].push(student.ParticipantID);
-						student[block] = `B.${j + 1}`;
+						student[block] = workshopName;
 						studentB++;
 						break;
 					}
