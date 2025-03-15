@@ -84,7 +84,7 @@ export function schedule(
 							enrolledA[block][workshopNum].push(student.ParticipantID);
 							student[getBlock(block)] = getWorkshopName(workshops, numWorkshopsA, choice);
 							studentA++;
-						} else if (doubleBlocks.includes(choice)) {
+						} else if (doubleBlocks.includes(choice) && studentA <= numA - 2) {
 							if (
 								firstDoubleBlock !== -1 &&
 								enrolledA[firstDoubleBlock][workshopNum].length < maximum &&
@@ -118,7 +118,7 @@ export function schedule(
 							enrolledB[block][workshopNum].push(student.ParticipantID);
 							student[getBlock(block)] = getWorkshopName(workshops, numWorkshopsA, choice);
 							studentB++;
-						} else if (doubleBlocks.includes(choice)) {
+						} else if (doubleBlocks.includes(choice) && studentB <= numB - 2) {
 							if (
 								enrolledB[firstDoubleBlock][workshopNum].length < maximum &&
 								enrolledB[firstDoubleBlock + 1][workshopNum].length < maximum &&
