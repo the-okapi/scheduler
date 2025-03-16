@@ -9,6 +9,21 @@ import {
 	getFirstAvailableDoubleBlock
 } from '$lib';
 
+function getAandB(student: any, blocks: number) {
+	let studentA = 0;
+	let studentB = 0;
+	for (let i = 1; i <= blocks; i++) {
+		block = student[`Block${i}`];
+		const split = block.split('.');
+		if (split[0] === 'A') {
+			studentA++;
+		} else {
+			studentB++;
+		}
+	}
+	return [studentA, studentB];
+}
+
 export function schedule(
 	students: any[],
 	maximumA: number,
@@ -23,6 +38,7 @@ export function schedule(
 	filters: Filter[],
 	workshops: WorkshopName[]
 ) {
+	let scheduleRaw: any[] = [];
 	let schedule: any[] = [];
 	const enrolledA: string[][][] = [];
 	for (let i = 0; i < blocks; i++) {
@@ -145,6 +161,11 @@ export function schedule(
 					}
 				}
 			}
+			scheduleRaw.push(student);
+		}
+		for (let h = 0; h < scheduleRaw.length; h++) {
+			let student = scheduleRaw[h];
+			let [studentA, studentB] = getAandB(student, blocks);
 			for (let i = 0; i < blocks; i++) {
 				if (studentA === numA) {
 					break;
