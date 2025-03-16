@@ -315,7 +315,7 @@
 	{/each}<br /><br />
 	<button onclick={back}>Back</button>
 {:else if status === 'error'}
-	<p>There was an error: {output.message}</p>
+	<p>There was an error: {JSON.stringify(output)}</p>
 {:else if status === 'list'}
 	<div class="main">
 		<h2>Workshop {getWorkshopName(workshopsList, numWorkshopsA, dataList.name)}</h2>
