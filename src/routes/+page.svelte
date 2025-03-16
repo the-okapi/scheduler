@@ -69,6 +69,8 @@
 
 	let customList = $state(false);
 
+	let output: any = $state();
+
 	function getDefaultNames() {
 		let toReturn = [];
 		for (let i = 1; i <= numWorkshopsA; i++) {
@@ -106,6 +108,7 @@
 		);
 		if (scheduled[0] === 'error') {
 			status = 'error';
+			output = scheduled[1];
 			console.error(scheduled[1]);
 		} else {
 			data = scheduled;
@@ -190,6 +193,7 @@
 			fileReader.readAsText(listFiles[0]);
 		} catch (error) {
 			console.error(error);
+			output = error;
 			status = 'error';
 		}
 	}
@@ -311,7 +315,7 @@
 	{/each}<br /><br />
 	<button onclick={back}>Back</button>
 {:else if status === 'error'}
-	<p>There was an error.</p>
+	<p>There was an error: {output.message}</p>
 {:else if status === 'list'}
 	<div class="main">
 		<h2>Workshop {getWorkshopName(workshopsList, numWorkshopsA, dataList.name)}</h2>
