@@ -45,7 +45,8 @@
 
 	let workshopListSelected = $state(false);
 
-	let maximum = $state(25);
+	let maximumA = $state(22);
+    let maximumB = $state(25);
 	let numChoices = $state(14);
 	let numWorkshopsA = $state(17);
 	let numWorkshopsB = $state(15);
@@ -91,7 +92,8 @@
 		const doubleBlockSnapshot = $state.snapshot(doubleBlock);
 		let [scheduled, aWorkshops, bWorkshops] = schedule(
 			csvJSON(String(fileReader.result)),
-			$state.snapshot(maximum),
+			$state.snapshot(maximumA),
+            $state.snapshot(maximumB),
 			$state.snapshot(numChoices),
 			$state.snapshot(numWorkshopsA),
 			$state.snapshot(numWorkshopsB),
@@ -342,7 +344,10 @@
 		onclick={() => listFileLink.click()}>Download Example</button
 	><br /><br />
 	<label>
-		Maximum number of students per workshop: <input type="number" bind:value={maximum} /></label
+		Maximum number of students per A workshop: <input type="number" bind:value={maximumA} /></label
+	><br />
+    <label>
+		Maximum number of students per B workshop: <input type="number" bind:value={maximumB} /></label
 	><br />
 	<label
 		>Number of choices per student in input spreadsheet: <input
