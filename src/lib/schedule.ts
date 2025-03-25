@@ -12,7 +12,7 @@ import {
 export function schedule(
 	students: any[],
 	maximumA: number,
-    maximumB: number,
+	maximumB: number,
 	numChoices: number,
 	numWorkshopsA: number,
 	numWorkshopsB: number,
@@ -46,15 +46,15 @@ export function schedule(
 		const filter = filters[i];
 		const [workshopGroup, wNum] = filter.workshop.split('.');
 		const workshopNum = Number(wNum) - 1;
-        if (workshopGroup === 'A') {
-            for (let j = 0; j < maximumA; j++) {
-                enrolledA[filter.block - 1][workshopNum].push('');
-            }
-        } else {
-            for (let j = 0; j < maximumB; j++) {
-                enrolledB[filter.block - 1][workshopNum].push('');
-            }
-        }
+		if (workshopGroup === 'A') {
+			for (let j = 0; j < maximumA; j++) {
+				enrolledA[filter.block - 1][workshopNum].push('');
+			}
+		} else {
+			for (let j = 0; j < maximumB; j++) {
+				enrolledB[filter.block - 1][workshopNum].push('');
+			}
+		}
 	}
 	try {
 		for (let h = 0; h < students.length; h++) {
@@ -80,6 +80,8 @@ export function schedule(
 						const firstDoubleBlock =
 							getFirstAvailableDoubleBlock(student, blocks, enrolledA, maximumA, choice) ?? -1;
 						if (
+							block !== -1 &&
+							student[getBlock(block)] === '' &&
 							enrolledA[block][workshopNum].length < maximumA &&
 							!filters.includes({ workshop: choice, block: block + 1 }) &&
 							!doubleBlocks.includes(choice)
@@ -114,6 +116,8 @@ export function schedule(
 						const firstDoubleBlock =
 							getFirstAvailableDoubleBlock(student, blocks, enrolledB, maximumB, choice) ?? -1;
 						if (
+							block !== -1 &&
+							student[getBlock(block)] === '' &&
 							enrolledB[block][workshopNum].length < maximumB &&
 							!filters.includes({ workshop: choice, block: block + 1 }) &&
 							!doubleBlocks.includes(choice)

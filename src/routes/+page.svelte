@@ -46,7 +46,7 @@
 	let workshopListSelected = $state(false);
 
 	let maximumA = $state(22);
-    let maximumB = $state(25);
+	let maximumB = $state(25);
 	let numChoices = $state(14);
 	let numWorkshopsA = $state(17);
 	let numWorkshopsB = $state(15);
@@ -93,7 +93,7 @@
 		let [scheduled, aWorkshops, bWorkshops] = schedule(
 			csvJSON(String(fileReader.result)),
 			$state.snapshot(maximumA),
-            $state.snapshot(maximumB),
+			$state.snapshot(maximumB),
 			$state.snapshot(numChoices),
 			$state.snapshot(numWorkshopsA),
 			$state.snapshot(numWorkshopsB),
@@ -346,7 +346,7 @@
 	<label>
 		Maximum number of students per A workshop: <input type="number" bind:value={maximumA} /></label
 	><br />
-    <label>
+	<label>
 		Maximum number of students per B workshop: <input type="number" bind:value={maximumB} /></label
 	><br />
 	<label
