@@ -410,8 +410,8 @@
 	<p>Workshop Names spreadsheet columns: <strong>Code, Name</strong></p>
 	<p>Input spreadsheet and Workshop Names spreadsheet must be <strong>.csv</strong> file</p>
 	<p>
-		<strong>Type.Number</strong> (Examples: A.1, B.11) is the format for the workshop code. Include nothing
-		else.
+		<strong>Type.Number</strong> (Examples: A.1, B.11) is the format for the workshop code. Include
+		nothing else. (<strong>No 0</strong> for <em>stop workshop</em> and <em>workshop maximum</em>)
 	</p>
 	<p><strong>A.0</strong> in Column1 if student does not have choices</p>
 {/if}
