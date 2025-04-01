@@ -143,3 +143,20 @@ export function getMaximum(
 		}
 	}
 }
+
+export function getNumAB(student: any, blocks: number) {
+	let numA = 0;
+	let numB = 0;
+	for (let i = 1; i <= blocks; i++) {
+		const workshop = student[`Block${i}`];
+		if (workshop !== '' && workshop) {
+			const workshopGroup = workshop.split('.')[0];
+			if (workshopGroup === 'A') {
+				numA++;
+			} else {
+				numB++;
+			}
+		}
+	}
+	return [numA, numB];
+}

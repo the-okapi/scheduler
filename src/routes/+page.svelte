@@ -200,7 +200,7 @@
 		}
 	}
 	function getFields() {
-		let toReturn = ['ParticipantID'];
+		let toReturn = ['ParticipantID', 'Name'];
 		for (let i = 0; i < blocks; i++) {
 			toReturn.push(`Block${i + 1}`);
 		}
@@ -406,7 +406,11 @@
 	<hr />
 
 	<p>Double Block number does not include 0 <strong>(A.3 instead of A.03)</strong></p>
-	<p>Input spreadsheet columns: <strong>ParticipantID, Choice1, Choice2, Choice3...</strong></p>
+	<p>
+		Input spreadsheet columns: <strong
+			>ParticipantID, Name, Choice1, Choice2, Choice3..., Block1, Block2...</strong
+		>
+	</p>
 	<p>Workshop Names spreadsheet columns: <strong>Code, Name</strong></p>
 	<p>Input spreadsheet and Workshop Names spreadsheet must be <strong>.csv</strong> file</p>
 	<p>
