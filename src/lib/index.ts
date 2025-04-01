@@ -8,6 +8,11 @@ export type WorkshopName = {
 	Name: string;
 };
 
+export type Maximum = {
+	workshop: string;
+	maximum: number;
+};
+
 export function csvJSON(csv: string) {
 	const lines = csv.split('\n');
 
@@ -115,4 +120,26 @@ export function getFirstAvailableDoubleBlock(
 		}
 	}
 	return -1;
+}
+
+export function getMaximum(
+	workshop: string,
+	maximumA: number,
+	maximumB: number,
+	maximums: Maximum[]
+) {
+	const maximumWorkshops = [];
+	for (let i = 0; i < maximums.length; i++) {
+		maximumWorkshops.push(maximums[i].workshop);
+	}
+	if (maximumWorkshops.includes(workshop)) {
+		return maximums.find((a) => a.workshop === workshop)?.maximum ?? 0;
+	} else {
+		const workshopGroup = workshop.split('.')[0];
+		if (workshopGroup === 'A') {
+			return maximumA;
+		} else {
+			return maximumB;
+		}
+	}
 }

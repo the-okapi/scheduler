@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { csvJSON, jsonCSV, type Filter } from '$lib';
+	import { csvJSON, jsonCSV, type Filter, type Maximum } from '$lib';
 	import { schedule } from '$lib/schedule';
 	import { getWorkshopName } from '$lib';
 
@@ -59,6 +59,11 @@
 
 	let filters: Filter[] = $state([]);
 
+	let workshopMaximumCode = $state('A.3');
+	let workshopMaximumNum = $state(12);
+
+	let workshopMaximums: Maximum[] = $state([]);
+
 	let downloadName = $state('schedule.json');
 	let workshopsList: any[] = $state(getDefaultNames());
 
@@ -94,6 +99,7 @@
 			csvJSON(String(fileReader.result)),
 			$state.snapshot(maximumA),
 			$state.snapshot(maximumB),
+			$state.snapshot(workshopMaximums),
 			$state.snapshot(numChoices),
 			$state.snapshot(numWorkshopsA),
 			$state.snapshot(numWorkshopsB),
@@ -208,6 +214,15 @@
 			}
 		}
 		filters.push({ workshop: filterWorkshop, block: filterBlock });
+	}
+	function addMaximum(event: Event) {
+		event.preventDefault();
+		for (let i = 0; i < workshopMaximums.length; i++) {
+			if (workshopMaximums[i].workshop === workshopMaximumCode) {
+				return;
+			}
+		}
+		workshopMaximums.push({ workshop: workshopMaximumCode, maximum: workshopMaximumNum });
 	}
 
 	let urlList = $state('');
@@ -361,6 +376,20 @@
 	<label>Number of blocks: <input type="number" bind:value={blocks} /></label><br />
 	<label>Double blocks (separated by space): <input type="text" bind:value={doubleBlock} /></label
 	><br />
+	<form onsubmit={addMaximum} name="Workshop Maximums">
+		<label
+			><strong>Add Separate Maximum</strong>
+			<input bind:value={workshopMaximumNum} required type="number" />
+			students for <input bind:value={workshopMaximumCode} required type="text" /><button
+				type="submit">Add Maximum</button
+			></label
+		>
+	</form>
+
+	{#each workshopMaximums as workshopMaximum, i}
+		<span>{workshopMaximum.maximum} student maximum in {workshopMaximum.workshop}</span>
+		<button onclick={() => workshopMaximums.splice(i, 1)}>Remove</button><br />
+	{/each}
 	<form onsubmit={addFilter} name="Workshop Filters">
 		<label
 			><strong>Stop Workshop</strong>
